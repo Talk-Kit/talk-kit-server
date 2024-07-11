@@ -9,5 +9,4 @@ public class TalkKitApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(TalkKitApplication.class, args);
 	}
-
 }

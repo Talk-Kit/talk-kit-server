@@ -1,0 +1,5 @@
+rootProject.name = 'canal-server'
+
+include 'canal-api'
+include 'canal-domain'
+include 'canal-helper'
