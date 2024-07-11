@@ -1,0 +1,3 @@
+[submodule "talk-kit-secret"]
+	path = talk-kit-secret
+	url = https://github.com/Talk-Kit/talk-kit-secret.git

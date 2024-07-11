@@ -39,7 +39,7 @@ dependencies {
 
 tasks {
     copy {
-        from("../canal-config")
+        from("../talk-kit-secret")
         include("*.yml")
         into("src/main/resources")
     }
