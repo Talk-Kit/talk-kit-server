@@ -48,8 +48,14 @@ jobs:
       - name: Build and Push Docker Image with Jib
         run: gradle :canal-api:jib
 
+      - name: Install argocd CLI
+        run: |
+          sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo chmod +x /usr/local/bin/argocd
+
       - name: Sync Argo CD application
         run: |
+          argocd login $ARGOCD_SERVER --insecure --username admin --password $ARGOCD_AUTH_TOKEN
           argocd app sync my-app
         env:
           ARGOCD_SERVER: ${{ secrets.ARGOCD_URL }}
