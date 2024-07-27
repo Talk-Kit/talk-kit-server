@@ -51,15 +51,8 @@ jobs:
       - name: Build and Push Docker Image with Jib
         run: gradle :canal-api:jib
 
-      - name: Install argocd CLI
+      - name: Notify Argo CD
         run: |
-          sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-          sudo chmod +x /usr/local/bin/argocd
-
-      - name: Sync Argo CD application
-        run: |
-          argocd login $ARGOCD_SERVER --username admin --password $ARGOCD_PASSWORD --insecure
-          argocd app sync default
-        env:
-          ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
-          ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
+          ARGOCD_SERVER=${{ secrets.ARGOCD_SERVER }}
+          ARGOCD_AUTH_TOKEN=$(curl -s -X POST $ARGOCD_SERVER/api/v1/session -d "{\"username\":\"${{ secrets.ARGOCD_USERNAME }}\",\"password\":\"${{ secrets.ARGOCD_PASSWORD }}\"}" | jq -r '.token')
+          curl -s -X POST "$ARGOCD_SERVER/api/v1/applications/my-app/sync" -H "Authorization: Bearer $ARGOCD_AUTH_TOKEN"
