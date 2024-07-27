@@ -39,14 +39,14 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
       - name: Build with Gradle
         run: gradle canal-api:bootJar --stacktrace
 
       - name: Build and Push Docker Image with Jib
         run: gradle :canal-api:jib
-
-      - name: Login to Docker Hub
-        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
       - name: Push Docker Image
         run: docker push ${{ secrets.DOCKER_IMAGE }}:latest
