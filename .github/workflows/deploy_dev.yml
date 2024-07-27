@@ -49,4 +49,5 @@ jobs:
         run: gradle :canal-api:jib
 
       - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_IMAGE }}:latest
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_REPO }}
+
