@@ -51,7 +51,7 @@ jobs:
 
       - name: Build and Push Docker Image with Jib
         run: |
-          cd canal/canal-api
+          cd ./canal-api
           gradle jib
         env:
           DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
