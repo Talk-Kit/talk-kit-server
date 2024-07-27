@@ -48,7 +48,7 @@ jobs:
       - name: Build and Push Docker Image with Jib
         run: |
           cd ./canal-api
-          gradle jib -Djib.from.image='openjdk:21' -Djib.to.image=${{ secrets.DOCKER_IMAGE }}
+          gradle jib
         env:
           JIB_FROM_IMAGE: 'openjdk:21'
           JIB_TO_IMAGE: ${{ secrets.DOCKER_IMAGE }}
