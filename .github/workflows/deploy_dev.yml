@@ -55,7 +55,7 @@ jobs:
 
       - name: Sync Argo CD application
         run: |
-          argocd login $ARGOCD_SERVER --insecure --username admin --password $ARGOCD_AUTH_TOKEN
+          argocd login $ARGOCD_URL --insecure --username admin --password $ARGOCD_AUTH_TOKEN
           argocd app sync my-app
         env:
           ARGOCD_SERVER: ${{ secrets.ARGOCD_URL }}
