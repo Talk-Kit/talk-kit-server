@@ -50,15 +50,7 @@ jobs:
           ./gradlew canal-api:bootJar --stacktrace
 
       - name: Build and Push Docker Image with Jib
-        run: |
-          cd ./canal-api
-          gradle jib
-        env:
-          DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
-          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
-          SERVER_ENV: 'dev'
-          MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
-          CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
+        run: ./gradlew :canal-api:jib
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
