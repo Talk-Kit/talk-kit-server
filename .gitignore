@@ -44,3 +44,4 @@ application*.yml
 ### kube ###
 k8s*.yml
 *kubeconfig.yml
+argocd*.yml

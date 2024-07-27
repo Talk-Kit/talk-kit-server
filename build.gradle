@@ -114,6 +114,7 @@ tasks {
         from("./talk-kit-secret/k8s")
         include("k8s*.yml")
         include("*kubeconfig.yml")
+        include("argocd*.yml")
         into("./k8s")
     }
 }
