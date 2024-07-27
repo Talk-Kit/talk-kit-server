@@ -1,0 +1,62 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - develop
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+      DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
+      CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
+
+    steps:
+      - name: 리포지토리를 가져옵니다
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          token: ${{ secrets.SUBMODULE_TOKEN }}
+
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: JDK 21을 설치합니다
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '21'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Build with Gradle
+        run: |
+          ./gradlew canal-api:bootJar --stacktrace
+
+      - name: Build and Push Docker Image with Jib
+        run: gradle jib -Djib.to.image=${{ secrets.DOCKER_IMAGE }}
+        env:
+          JIB_FROM_IMAGE: 'openjdk:21'
+          JIB_TO_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+          JIB_CONTAINER_MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
+          JIB_CONTAINER_JVM_FLAGS: '-Dspring.profiles.active=dev -Dfile.encoding=UTF-8'
+          JIB_CONTAINER_PORTS: ${{ secrets.CONTAINER_PORT }}
+          JIB_CONTAINER_ALLOW_INSECURE_REGISTRIES: 'true'
+
+      - name: Login to Docker Hub
+        run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+      - name: Push Docker Image
+        run: docker push ${{ secrets.DOCKER_IMAGE }}:latest
