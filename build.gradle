@@ -60,6 +60,30 @@ subprojects {
 }
 
 project(':canal-api') {
+    def dockerRepository = System.getenv('DOCKER_REPOSITORY')
+    def dockerImage = System.getenv('DOCKER_IMAGE')
+    def serverEnv = System.getenv('SERVER_ENV')
+    def mainClass = System.getenv('MAIN_CLASS')
+    def containerPort = System.getenv('CONTAINER_PORT')
+
+    if (serverEnv == 'dev') {
+        jib {
+            from {
+                image = 'openjdk:21'
+            }
+            to {
+                image = "${dockerRepository}/${dockerImage}"
+                tags = ['latest']
+            }
+            container {
+                mainClass = mainClass
+                jvmFlags = ['-Dspring.profiles.active=dev', '-Dfile.encoding=UTF-8']
+                ports = [containerPort]
+                allowInsecureRegistries = true
+            }
+        }
+    }
+
     dependencies {
         implementation(project(":canal-domain"))
         implementation(project(":canal-helper"))
@@ -76,7 +100,6 @@ project(':canal-domain') {
 
 project(':canal-helper') {
     dependencies {
-
     }
 }
 

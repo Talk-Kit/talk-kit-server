@@ -12,6 +12,7 @@ jobs:
     env:
       DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
       DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+      SERVER_ENV: 'dev'
       MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
       CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
 
@@ -50,14 +51,14 @@ jobs:
 
       - name: Build and Push Docker Image with Jib
         run: |
-          cd ./canal-api
-          gradle jib -Djib.from.image='openjdk:21' -Djib.to.image=${{ secrets.DOCKER_IMAGE }}
+          cd canal/canal-api
+          gradle jib
         env:
-          JIB_FROM_IMAGE: 'openjdk:21'
-          JIB_TO_IMAGE: ${{ secrets.DOCKER_IMAGE }}
-          JIB_CONTAINER_JVM_FLAGS: '-Dspring.profiles.active=dev -Dfile.encoding=UTF-8'
-          JIB_CONTAINER_PORTS: ${{ secrets.CONTAINER_PORT }}
-          JIB_CONTAINER_ALLOW_INSECURE_REGISTRIES: 'true'
+          DOCKER_REPOSITORY: ${{ secrets.DOCKER_REPOSITORY }}
+          DOCKER_IMAGE: ${{ secrets.DOCKER_IMAGE }}
+          SERVER_ENV: 'dev'
+          MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
+          CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
 
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
