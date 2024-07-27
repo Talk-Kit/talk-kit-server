@@ -62,7 +62,7 @@ jobs:
         run: |
           echo "Logging into Argo CD server at $ARGOCD_SERVER"
           argocd login $ARGOCD_SERVER --username admin --password $ARGOCD_AUTH_TOKEN --insecure
-          argocd app sync my-app
+          argocd app sync argocd_k8s
         env:
           ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
           ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
