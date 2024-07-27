@@ -59,7 +59,7 @@ jobs:
       - name: Sync Argo CD application
         run: |
           argocd login $ARGOCD_SERVER --username admin --password $ARGOCD_PASSWORD --insecure
-          argocd app sync K8S
+          argocd app sync default
         env:
           ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
           ARGOCD_PASSWORD: ${{ secrets.ARGOCD_PASSWORD }}
