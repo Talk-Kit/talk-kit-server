@@ -35,4 +35,12 @@ out/
 
 ### VS Code ###
 .vscode/
-*.yml
+
+
+
+### yml ###
+application*.yml
+
+### kube ###
+k8s*.yml
+*kubeconfig.yml
