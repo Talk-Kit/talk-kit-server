@@ -46,6 +46,7 @@ jobs:
           ./gradlew canal-api:bootJar --stacktrace
 
       - name: Build and Push Docker Image with Jib
+        working-directory: ./canal/canal-api
         run: gradle jib -Djib.from.image='openjdk:21' -Djib.to.image=${{ secrets.DOCKER_IMAGE }}
         env:
           JIB_FROM_IMAGE: 'openjdk:21'
