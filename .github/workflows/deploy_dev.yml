@@ -41,6 +41,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-
 
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
+
       - name: Build with Gradle
         run: |
           ./gradlew canal-api:bootJar --stacktrace
@@ -52,7 +55,6 @@ jobs:
         env:
           JIB_FROM_IMAGE: 'openjdk:21'
           JIB_TO_IMAGE: ${{ secrets.DOCKER_IMAGE }}
-          JIB_CONTAINER_MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
           JIB_CONTAINER_JVM_FLAGS: '-Dspring.profiles.active=dev -Dfile.encoding=UTF-8'
           JIB_CONTAINER_PORTS: ${{ secrets.CONTAINER_PORT }}
           JIB_CONTAINER_ALLOW_INSECURE_REGISTRIES: 'true'
