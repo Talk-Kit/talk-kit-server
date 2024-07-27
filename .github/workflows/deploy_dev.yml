@@ -48,6 +48,3 @@ jobs:
       - name: Build and Push Docker Image with Jib
         run: gradle :canal-api:jib
 
-      - name: Push Docker Image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/${{ secrets.DOCKER_PROD_REPO }}
-
