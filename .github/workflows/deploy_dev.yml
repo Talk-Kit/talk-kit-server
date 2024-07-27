@@ -53,17 +53,10 @@ jobs:
           sudo curl -sSL -o /usr/local/bin/argocd https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo chmod +x /usr/local/bin/argocd
 
-      - name: Check ARGOCD_SERVER value
-        run: echo "ARGOCD_SERVER is $ARGOCD_SERVER"
-        env:
-          ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
-
       - name: Sync Argo CD application
         run: |
-          echo "Logging into Argo CD server at $ARGOCD_SERVER"
           argocd login $ARGOCD_SERVER --username admin --password $ARGOCD_AUTH_TOKEN --insecure
-          echo "Synchronizing application my-app"
-          argocd app sync argocd_k8s
+          argocd app sync k8s
         env:
           ARGOCD_SERVER: ${{ secrets.ARGOCD_SERVER }}
           ARGOCD_AUTH_TOKEN: ${{ secrets.ARGOCD_AUTH_TOKEN }}
