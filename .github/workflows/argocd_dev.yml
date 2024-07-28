@@ -16,14 +16,17 @@ jobs:
       - name: Checkout code from private repo
         uses: actions/checkout@v3
         with:
-          repository: ${{ secrets.ORGANIZATION_REPO}}
+          repository: ${{ secrets.ORGANIZATION_REPO }}
           token: ${{ secrets.SUBMODULE_TOKEN }}
           submodules: true
 
       - name: Install kustomize
         run: |
-          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          echo "Installing kustomize..."
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh" | bash
           mv kustomize /usr/local/bin/
+          echo "kustomize installed:"
+          kustomize version
 
       - name: Ensure master branch and reset
         run: |
@@ -36,7 +39,7 @@ jobs:
       - name: Update kubernetes manifest
         run: |
           echo "Searching for manifests containing the image..."
-          manifests=$(grep -rl "${{ secrets.DOCKER_IMAGE }}:" ./)
+          manifests=$(grep -rl "${{ secrets.DOCKER_IMAGE }}:" ./) || true
           if [ -z "$manifests" ]; then
             echo "No manifests found containing the image."
             exit 0
@@ -48,7 +51,7 @@ jobs:
             kustomize edit set image ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
             cd -
           done
-          
+
           git config user.name "GitHub Actions"
           git config user.email "pocard0117@naver.com"
           git add .
