@@ -9,7 +9,7 @@ permissions: write-all
 
 
 jobs:
-  ci-process with jib:
+  ci-process-with-jib:
     runs-on: ubuntu-latest
 
     env:
@@ -51,7 +51,7 @@ jobs:
       - name: Build and Push Docker Image with Jib
         run: gradle :canal-api:jib
 
-  The process involves triggering Argo CD by changing an image tag:
+  triggering-ArgoCD-by-changing-an-image tag:
     runs-on: ubuntu-latest
     needs: ci-process with jib
 
