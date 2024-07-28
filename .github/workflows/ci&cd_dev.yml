@@ -69,7 +69,7 @@ jobs:
       - name: Checkout kustomize repository
         uses: actions/checkout@v2
         with:
-          repository: ${{ secrets.K8S_REPO }}
+          repository: Talk-Kit/talk-kit-k8s
           ref: master
           token: ${{ secrets.SUBMODULE_TOKEN }}
 
