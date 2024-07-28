@@ -65,6 +65,7 @@ project(':canal-api') {
     def serverEnv = System.getenv('SERVER_ENV')
     def mainClass = System.getenv('MAIN_CLASS')
     def containerPort = System.getenv('CONTAINER_PORT')
+    def commitHash = System.getenv('COMMIT_HASH')
 
     if (serverEnv == 'dev') {
         jib {
@@ -73,7 +74,7 @@ project(':canal-api') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = ['latest']
+                tags = [commitHash, 'latest']
             }
             container {
                 mainClass = mainClass
