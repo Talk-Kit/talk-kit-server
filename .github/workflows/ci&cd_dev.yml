@@ -81,8 +81,7 @@ jobs:
 
       - name: Commit files
         run: |
-          cd ../
-          git config --global user.email "github-actions@github.com"
-          git config --global user.name "github-actions"
+          git config --global user.email ${{ ADMIN_EMAIL }}
+          git config --global user.name "canal"
           git commit -am "Update image tag"
           git push -u origin master
