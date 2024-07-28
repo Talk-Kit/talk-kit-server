@@ -27,7 +27,6 @@ jobs:
 
       - name: Update kubernetes manifest
         run: |
-          git switch master
           git reset --hard origin/master
           
           for manifest in $(grep -rl "${{ secrets.DOCKER_IMAGE }}:" ./); do
