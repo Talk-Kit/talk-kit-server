@@ -69,7 +69,7 @@ jobs:
       - name: Checkout kustomize repository
         uses: actions/checkout@v2
         with:
-          repository: ${{ secrets.K8S-repo }}
+          repository: ${{ secrets.K8S_REPO }}
           ref: master
           token: ${{ secrets.SUBMODULE_TOKEN }}
 
