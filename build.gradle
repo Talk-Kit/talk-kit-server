@@ -74,7 +74,7 @@ project(':canal-api') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = [commitHash, 'latest']
+                tags = ['latest']
             }
             container {
                 mainClass = mainClass
