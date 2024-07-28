@@ -8,7 +8,7 @@ public class ExampleController {
 
 	@GetMapping("/example")
 	public void exampleController() {
-		System.out.println("CD TEST 123");
+		System.out.println("CD 테스트입니다");
 	}
 
 }
