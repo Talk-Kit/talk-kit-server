@@ -75,13 +75,13 @@ jobs:
 
       - name: Update Kubernetes resources
         run: |
-          cd canal-k8s-manifests/overlays/dev/
+          cd deploy/overlays/dev/
           kustomize edit set image ${{ secrets.DOCKER_IMAGE }}:${{ steps.image.outputs.version }}
           cat kustomization.yaml
 
       - name: Commit files
         run: |
-          cd canal-k8s-manifests
+          cd ../
           git config --global user.email "github-actions@github.com"
           git config --global user.name "github-actions"
           git commit -am "Update image tag"
