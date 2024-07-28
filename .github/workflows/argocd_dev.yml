@@ -25,11 +25,25 @@ jobs:
           curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
           mv kustomize /usr/local/bin/
 
+      - name: Ensure master branch and reset
+        run: |
+          git fetch origin master
+          if [ "$(git branch --show-current)" != "master" ]; then
+            git checkout -B master origin/master
+          fi
+          git reset --hard origin/master
+
       - name: Update kubernetes manifest
         run: |
-          git reset --hard origin/master
-          
-          for manifest in $(grep -rl "${{ secrets.DOCKER_IMAGE }}:" ./); do
+          echo "Searching for manifests containing the image..."
+          manifests=$(grep -rl "${{ secrets.DOCKER_IMAGE }}:" ./)
+          if [ -z "$manifests" ]; then
+            echo "No manifests found containing the image."
+            exit 0
+          fi
+
+          for manifest in $manifests; do
+            echo "Processing $manifest"
             cd $(dirname $manifest)
             kustomize edit set image ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
             cd -
