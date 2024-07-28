@@ -70,7 +70,7 @@ jobs:
         uses: actions/checkout@v2
         with:
           repository: ${{ secrets.K8S-repo }}
-          ref: dev
+          ref: master
           token: ${{ secrets.SUBMODULE_TOKEN }}
           path: canal-k8s-manifests
 
