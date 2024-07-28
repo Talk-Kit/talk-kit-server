@@ -1,0 +1,43 @@
+name: Dirty Checking For Argocd
+
+on:
+  workflow_run:
+    workflows: [ "Build With Jib" ]
+    types:
+      - completed
+
+permissions: write-all
+
+jobs:
+  update-manifest:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code from private repo
+        uses: actions/checkout@v3
+        with:
+          repository: ${{ secrets.ORGANIZATION_REPO}}
+          token: ${{ secrets.SUBMODULE_TOKEN }}
+          submodules: true
+
+      - name: Install kustomize
+        run: |
+          curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash
+          mv kustomize /usr/local/bin/
+
+      - name: Update kubernetes manifest
+        run: |
+          git switch master
+          git reset --hard origin/master
+          
+          for manifest in $(grep -rl "${{ secrets.DOCKER_IMAGE }}:" ./); do
+            cd $(dirname $manifest)
+            kustomize edit set image ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}
+            cd -
+          done
+          
+          git config user.name "GitHub Actions"
+          git config user.email "pocard0117@naver.com"
+          git add .
+          git commit -m 'k8s manifest for ${{ secrets.DOCKER_IMAGE }}:${{ github.sha }}'
+          git push origin master -f

@@ -1,4 +1,4 @@
-name: Build and Push Docker Image
+name: Build With Jib
 
 on:
   push:
@@ -50,9 +50,3 @@ jobs:
 
       - name: Build and Push Docker Image with Jib
         run: gradle :canal-api:jib
-
-      - name: Notify Argo CD
-        run: |
-          ARGOCD_SERVER=${{ secrets.ARGOCD_SERVER }}
-          ARGOCD_AUTH_TOKEN=$(curl -s -X POST $ARGOCD_SERVER/api/v1/session -d "{\"username\":\"${{ secrets.ARGOCD_USERNAME }}\",\"password\":\"${{ secrets.ARGOCD_PASSWORD }}\"}" | jq -r '.token')
-          curl -s -X POST "$ARGOCD_SERVER/api/v1/applications/my-app/sync" -H "Authorization: Bearer $ARGOCD_AUTH_TOKEN"
