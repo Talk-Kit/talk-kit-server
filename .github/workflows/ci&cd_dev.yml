@@ -72,7 +72,6 @@ jobs:
           repository: ${{ secrets.K8S-repo }}
           ref: master
           token: ${{ secrets.SUBMODULE_TOKEN }}
-          path: canal-k8s-manifests
 
       - name: Update Kubernetes resources
         run: |
