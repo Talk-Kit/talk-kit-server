@@ -71,7 +71,7 @@ jobs:
         with:
           repository: ${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE }}
           ref: dev
-          token: ${{ secrets.ACTION_TOKEN }}
+          token: ${{ secrets.SUBMODULE_TOKEN }}
           path: canal-k8s-manifests
 
       - name: Update Kubernetes resources
