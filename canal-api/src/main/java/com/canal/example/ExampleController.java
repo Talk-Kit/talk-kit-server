@@ -9,7 +9,7 @@ public class ExampleController {
 
 	@GetMapping("/example")
 	public String exampleController() {
-		return "TEST";
+		return "TEST-Get";
 	}
 
 	@PostMapping("/example")
