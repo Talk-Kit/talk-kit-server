@@ -7,8 +7,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ExampleController {
 
 	@GetMapping("/example")
-	public void exampleController() {
-		System.out.println("CD 테스트입니다");
+	public String exampleController() {
+		return "TEST";
 	}
 
 }
