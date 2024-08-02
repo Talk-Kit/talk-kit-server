@@ -77,9 +77,9 @@ jobs:
           cd deploy/overlays/dev/
           kustomize edit set image ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
 
-      - name: Commit files
+      - name: Commit and push changes
         run: |
-          git config --global user.email ${{ secrets.ADMIN_EMAIL }}
+          git config --global user.email "${{ secrets.ADMIN_EMAIL }}"
           git config --global user.name "canal"
-          git commit -am "k8s manifest for ${{ env.IMAGE_TAG }}"
+          git commit --allow-empty -m "k8s manifest update for ${{ env.IMAGE_TAG }}"
           git push -u origin master
