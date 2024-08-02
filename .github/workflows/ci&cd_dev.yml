@@ -11,7 +11,6 @@ env:
   SERVER_ENV: 'dev'
   MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
   CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
-  IMAGE_TAG: ${GITHUB_SHA::8}
 
 jobs:
   ci-process-with-jib:
@@ -40,6 +39,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-gradle-   
 
+      - name: Set short SHA in job1
+        run: echo "IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+
       - name: Login to Docker Hub
         run: echo ${{ secrets.DOCKER_PASSWORD }} | docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
 
@@ -59,6 +61,9 @@ jobs:
       IMAGE_TAG: ${{ needs.ci-process-with-jib.outputs.IMAGE_TAG }}
 
     steps:
+      - name: Set short SHA in job2
+        run: echo "IMAGE_TAG=${GITHUB_SHA::8}" >> $GITHUB_ENV
+
       - name: Setup Kustomize
         uses: imranismail/setup-kustomize@v1
 
