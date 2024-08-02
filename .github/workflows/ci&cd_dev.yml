@@ -76,10 +76,12 @@ jobs:
         run: |
           cd deploy/overlays/dev/
           kustomize edit set image ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
+          git add .
+
 
       - name: Commit and push changes
         run: |
           git config --global user.email "${{ secrets.ADMIN_EMAIL }}"
           git config --global user.name "canal"
-          git commit --allow-empty -m "k8s manifest update for ${{ env.IMAGE_TAG }}"
+          git diff --staged --quiet || git commit -m "k8s manifest update for ${{ env.IMAGE_TAG }}"
           git push -u origin master
