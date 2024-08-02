@@ -84,4 +84,4 @@ jobs:
           git config --global user.name "canal"
           git add .
           git diff --staged --quiet || (git commit -m "k8s manifest update for ${{ env.IMAGE_TAG }} && git push)"
-          git push -u origin master
+          git push origin master
