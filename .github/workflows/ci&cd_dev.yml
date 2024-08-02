@@ -75,7 +75,7 @@ jobs:
       - name: Update Kubernetes resources
         run: |
           cd deploy/overlays/dev/
-          kustomize edit set image ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
+          kustomize edit set image ${{ secret.DOCKER_REPOSITORY }}/${{ secret.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
           cat kustomization.yaml
 
       - name: Commit and push changes
