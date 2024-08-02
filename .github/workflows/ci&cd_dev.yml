@@ -11,7 +11,7 @@ env:
   SERVER_ENV: 'dev'
   MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
   CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
-  IMAGE_TAG: ${{ github.sha::8 }}
+  IMAGE_TAG: ${GITHUB_SHA::8}
 
 jobs:
   ci-process-with-jib:
