@@ -9,11 +9,11 @@ public class ExampleController {
 
 	@GetMapping("/example")
 	public String exampleController() {
-		return "TEST-Get5";
+		return "TEST-Get6";
 	}
 
 	@PostMapping("/example")
 	public String examplePostController() {
-		return "TEST-Post5";
+		return "TEST-Post6";
 	}
 }
