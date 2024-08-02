@@ -77,11 +77,6 @@ jobs:
           cd deploy/overlays/dev/
           kustomize edit set image ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
 
-      - name: Update Kubernetes resources
-        run: |
-          cd deploy/overlays/dev/
-          kustomize edit set image DOCKER_REPOSITORY/DOCKER_IMAGE:${{ env.IMAGE_TAG }}
-
       - name: Commit files
         run: |
           git config --global user.email ${{ secrets.ADMIN_EMAIL }}
