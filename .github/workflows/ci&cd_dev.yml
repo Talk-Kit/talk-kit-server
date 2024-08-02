@@ -76,10 +76,11 @@ jobs:
         run: |
           cd deploy/overlays/dev/
           kustomize edit set image ${{ env.DOCKER_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
-
+          cat kustomization.yaml
 
       - name: Commit and push changes
         run: |
+          cd deploy
           git config --global user.email "${{ secrets.ADMIN_EMAIL }}"
           git config --global user.name "canal"
           git add .
