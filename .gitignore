@@ -45,3 +45,4 @@ application*.yml
 k8s*.yml
 *kubeconfig.yml
 argocd_service.yml
+.DS_Store
