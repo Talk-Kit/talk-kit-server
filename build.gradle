@@ -104,18 +104,37 @@ project(':canal-helper') {
     }
 }
 
+project(':eureka') {
+    dependencies {
+    }
+}
+
+project(':api-gateway') {
+    dependencies {
+    }
+}
 
 tasks {
-    copy {
-        from("./talk-kit-secret")
-        include("application*.yml")
-        into("canal-api/src/main/resources")
-    }
     copy {
         from("./talk-kit-secret/k8s")
         include("k8s*.yml")
         include("*kubeconfig.yml")
         include("argocd*.yml")
         into("./k8s")
+    }
+    copy {
+        from("./talk-kit-secret/eureka/server")
+        include("application*.yml")
+        into("eureka/src/main/resources")
+    }
+    copy {
+        from("./talk-kit-secret/eureka/gateway")
+        include("application*.yml")
+        into("api-gateway/src/main/resources")
+    }
+    copy {
+        from("./talk-kit-secret/eureka/client/member")
+        include("application*.yml")
+        into("canal-api/src/main/resources")
     }
 }
