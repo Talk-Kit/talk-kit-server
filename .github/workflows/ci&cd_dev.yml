@@ -15,6 +15,9 @@ env:
   MAIN_CLASS_EUREKA: ${{ secrets.MAIN_CLASS_EUREKA }}
   CONTAINER_PORT_EUREKA: ${{ secrets.CONTAINER_PORT_EUREKA }}
 
+  MAIN_CLASS_GATEWAY: ${{ secrets.MAIN_CLASS_GATEWAY }}
+  CONTAINER_PORT_GATEWAY: ${{ secrets.CONTAINER_PORT_GATEWAY }}
+
 jobs:
   ci-process-with-jib:
     runs-on: ubuntu-latest
@@ -60,6 +63,11 @@ jobs:
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: gradle :eureka:jib -Djib.to.image=${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_EUREKA }}:${{ env.IMAGE_TAG }}
+
+      - name: Build and Push Docker Image with Jib Gateway
+        env:
+          IMAGE_TAG: ${{ env.IMAGE_TAG }}
+        run: gradle :api-gateway:jib -Djib.to.image=${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_GATEWAY }}:${{ env.IMAGE_TAG }}
 
   triggering-ArgoCD-by-changing-an-imageTag:
     runs-on: ubuntu-latest
