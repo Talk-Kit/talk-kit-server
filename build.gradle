@@ -64,7 +64,6 @@ project(':eureka') {
     def serverEnv = System.getenv('SERVER_ENV')
     def mainClass = System.getenv('MAIN_CLASS_EUREKA')
     def containerPort = System.getenv('CONTAINER_PORT_EUREKA')
-    def imageTag = System.getenv('IMAGE_TAG_EUREKA')
 
     if (serverEnv == 'dev') {
         jib {
@@ -72,8 +71,8 @@ project(':eureka') {
                 image = 'openjdk:17'
             }
             to {
-                image = "${dockerRepository}/${dockerImage}:${imageTag}"
-                tags = [imageTag]
+                image = "${dockerRepository}/${dockerImage}"
+                tags = ['latest']
             }
             container {
                 mainClass = mainClass
@@ -85,8 +84,7 @@ project(':eureka') {
     }
 
     dependencies {
-        implementation(project(":canal-domain"))
-        implementation(project(":canal-helper"))
+
     }
 }
 project(':canal-api') {
@@ -134,10 +132,7 @@ project(':canal-helper') {
     }
 }
 
-project(':eureka') {
-    dependencies {
-    }
-}
+
 
 project(':api-gateway') {
     dependencies {
