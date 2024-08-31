@@ -122,6 +122,7 @@ project(':canal-api') {
     def containerPort = System.getenv('CONTAINER_PORT_USER')
 //    def imageTag = System.getenv('IMAGE_TAG')
 
+
     if (serverEnv == 'dev') {
         jib {
             from {
