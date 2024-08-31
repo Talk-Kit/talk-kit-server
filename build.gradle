@@ -116,11 +116,11 @@ project(':api-gateway') {
 }
 project(':canal-api') {
     def dockerRepository = System.getenv('DOCKER_REPOSITORY')
-    def dockerImage = System.getenv('DOCKER_IMAGE')
+    def dockerImage = System.getenv('DOCKER_IMAGE_USER')
     def serverEnv = System.getenv('SERVER_ENV')
     def mainClass = System.getenv('MAIN_CLASS')
-    def containerPort = System.getenv('CONTAINER_PORT')
-    def imageTag = System.getenv('IMAGE_TAG')
+    def containerPort = System.getenv('CONTAINER_PORT_USER')
+//    def imageTag = System.getenv('IMAGE_TAG')
 
     if (serverEnv == 'dev') {
         jib {
@@ -128,8 +128,8 @@ project(':canal-api') {
                 image = 'openjdk:17'
             }
             to {
-                image = "${dockerRepository}/${dockerImage}:${imageTag}"
-                tags = [imageTag]
+                image = "${dockerRepository}/${dockerImage}"
+                tags = ['latest']
             }
             container {
                 mainClass = mainClass
