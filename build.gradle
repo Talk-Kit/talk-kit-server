@@ -72,7 +72,7 @@ project(':eureka') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = ['2.0']
+                tags = ['3.0']
             }
             container {
                 mainClass = mainClass
@@ -101,7 +101,7 @@ project(':api-gateway') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = ['latest']
+                tags = ['3.0']
             }
             container {
                 mainClass = mainClass
@@ -132,7 +132,7 @@ project(':canal-api') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = ['latest']
+                tags = ['3.0']
             }
             container {
                 mainClass = mainClass
