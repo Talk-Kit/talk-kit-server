@@ -101,7 +101,7 @@ project(':api-gateway') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = ['3.0']
+                tags = ['4.0']
             }
             container {
                 mainClass = mainClass
@@ -132,7 +132,7 @@ project(':canal-api') {
             }
             to {
                 image = "${dockerRepository}/${dockerImage}"
-                tags = ['3.0']
+                tags = ['4.0']
             }
             container {
                 mainClass = mainClass
