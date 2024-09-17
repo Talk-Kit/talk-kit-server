@@ -1,6 +1,6 @@
 package com.canal.security;
 
-import com.canal.service.UserService;
+import com.canal.service.UserDetailService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,11 +17,12 @@ import java.io.IOException;
 @Component
 public class JwtFilter extends OncePerRequestFilter {
     private final JwtUtil jwtUtil;
-    private final UserService userService;
+    private final UserDetailService userDetailService;
+    private static final int  AUTORIZATION_START_INDEX  = 7;
 
-    public JwtFilter(JwtUtil jwtUtil, UserService userService) {
+    public JwtFilter(JwtUtil jwtUtil, UserDetailService userDetailService) {
         this.jwtUtil = jwtUtil;
-        this.userService = userService;
+        this.userDetailService = userDetailService;
     }
 
     @Override
@@ -33,11 +34,11 @@ public class JwtFilter extends OncePerRequestFilter {
         String userId = null;
 
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
-            token = authorizationHeader.substring(7);
+            token = authorizationHeader.substring(AUTORIZATION_START_INDEX);
             userId = jwtUtil.extractUsername(token);
         }
         if (userId != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(userId);
+            UserDetails userDetails = userDetailService.loadUserByUsername(userId);
 
             if (jwtUtil.isTokenValid(token, userDetails.getUsername())) {
                 UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(

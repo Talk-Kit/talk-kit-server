@@ -96,6 +96,9 @@ jobs:
         run: |
           cd deploy/overlays/dev/
           kustomize edit set image ${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE }}:${{ env.IMAGE_TAG }}
+          kustomize edit set image ${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_EUREKA }}:${{ env.IMAGE_TAG }}
+          kustomize edit set image ${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_GATEWAY }}:${{ env.IMAGE_TAG }}
+          kustomize edit set image ${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_USER }}:${{ env.IMAGE_TAG }}
           cat kustomization.yaml
 
       - name: Commit and push changes

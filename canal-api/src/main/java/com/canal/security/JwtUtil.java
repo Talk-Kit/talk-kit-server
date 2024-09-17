@@ -18,7 +18,7 @@ public class JwtUtil {
     }
 
     // 토큰 유효 기간 : 10시간
-    private final long EXPIRATION_TIME = 1000 * 60 * 60 * 10;
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10;
 
     // JWT 토큰 생성
     public String generateToken(String userId) {
