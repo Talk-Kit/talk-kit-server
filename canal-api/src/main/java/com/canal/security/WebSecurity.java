@@ -28,7 +28,8 @@ public class WebSecurity {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,"/api/members/login").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/members/users").permitAll()
-                        .requestMatchers("/api/members/example").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/members/example").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/members/example").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
@@ -41,9 +42,7 @@ public class WebSecurity {
 
     @Bean
     public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-
         return authenticationConfiguration.getAuthenticationManager();
-
     }
 
 

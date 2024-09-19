@@ -4,12 +4,13 @@ import com.domain.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "users")
 public class UserEntity extends BaseEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_seq",updatable = false)
@@ -18,8 +19,8 @@ public class UserEntity extends BaseEntity {
     @Column(name = "user_id", nullable = false,unique = true)
     private String userId;
 
-    @Column(name = "user_pw", nullable = false)
-    private String encryptedPwd;
+    @Column(name = "user_pwd", nullable = false)
+    private String userPwd;
 
     @Column(name = "user_email", nullable = false)
     @Email
@@ -30,5 +31,8 @@ public class UserEntity extends BaseEntity {
 
     @Column(name = "user_affiliation", nullable = false)
     private String userAffiliation;
+
+    @Column(name= "user_deleted",nullable = false)
+    private boolean deleted = Boolean.FALSE;
 
 }
