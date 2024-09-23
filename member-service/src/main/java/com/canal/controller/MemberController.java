@@ -3,24 +3,28 @@ package com.canal.controller;
 import com.canal.dto.RequestJoin;
 import com.canal.dto.RequestLoginRecord;
 import com.canal.dto.ResponseUsersRecord;
+import com.canal.security.JwtUtil;
 import com.canal.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/members")
-public class ExampleController {
+@RequestMapping("/api/member-service")
+@Slf4j
+public class MemberController {
 
 	private final UserService userService;
 
 	@Autowired
-	public ExampleController(UserService userService) { this.userService = userService; }
+	public MemberController(UserService userService) {
+		this.userService = userService;
+	}
 
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RequestLoginRecord requestLoginRecord) {
@@ -32,7 +36,7 @@ public class ExampleController {
 			headers.add("Authorization", "Bearer " + token);
 
 			return ResponseEntity.ok().headers(headers).body("로그인 성공");
-		} catch (AuthenticationException e) {
+		} catch (Exception e) {
 			return ResponseEntity.status(401).body("로그인 실패: 인증 실패");
 		}
 
@@ -64,6 +68,11 @@ public class ExampleController {
 		ResponseUsersRecord responseUsersRecord = userService.getUserByUserSeq(userSeq);
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseUsersRecord);
+	}
+	@GetMapping("/client/project/{userId}")
+	public ResponseEntity<Long> getUserSeqByUserId(@PathVariable("userId") String userId){
+		Long userSeq = userService.getUserSeqByUserId(userId);
+		return ResponseEntity.status(HttpStatus.OK).body(userSeq);
 	}
 
 	@GetMapping("/example")

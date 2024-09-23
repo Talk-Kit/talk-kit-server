@@ -1,6 +1,7 @@
 package com.canal.security;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,13 +13,11 @@ import java.util.Date;
 @Component
 public class JwtUtil {
     private final SecretKey secretKey;
+    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10;// 토큰 유효 기간 : 10시간
 
     public JwtUtil(@Value("${jwt.token}")String secret) {
         this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
     }
-
-    // 토큰 유효 기간 : 10시간
-    private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 10;
 
     // JWT 토큰 생성
     public String generateToken(String userId) {
@@ -31,7 +30,7 @@ public class JwtUtil {
     }
 
     // JWT 토큰에서 사용자 이름 추출
-    public String extractUsername(String token) {
+    public String getUserIdFromJwt(String token) {
         try {
             return Jwts.parser()
                     .setSigningKey(secretKey)
@@ -60,8 +59,12 @@ public class JwtUtil {
     }
 
     // 토큰이 유효한지 확인
-    public boolean isTokenValid(String token, String username) {
-        String extractedUsername = extractUsername(token);
-        return (extractedUsername.equals(username) && !isTokenExpired(token));
+    public boolean isTokenValid(String token) {
+        try {
+            Jwts.parser().setSigningKey(secretKey).build().parseClaimsJws(token);
+            return true;
+        } catch (JwtException | IllegalArgumentException e) {
+            return false;
+        }
     }
 }
