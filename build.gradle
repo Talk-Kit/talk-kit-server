@@ -221,4 +221,9 @@ tasks {
         include("application*.yml")
         into("project-service/src/main/resources")
     }
+    copy {
+        from("./talk-kit-secret/eureka/client/core")
+        include("application*.yml")
+        into("canal-domain/src/main/resources")
+    }
 }
