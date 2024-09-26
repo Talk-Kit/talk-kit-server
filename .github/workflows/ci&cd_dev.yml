@@ -59,7 +59,7 @@ jobs:
       - name: Build with Gradle
         run: gradle member-service:bootJar --stacktrace
 
-      - name: Build and Push Docker Image with Jib
+      - name: Build and Push Docker Image with Jib Member
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: gradle :member-service:jib -Djib.to.image=${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_USER }}:${{ env.IMAGE_TAG }}
