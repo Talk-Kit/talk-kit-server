@@ -14,10 +14,10 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 @EnableWebSecurity
 public class WebSecurity {
-    private final JwtFilter jwtFilter;
+    private final JwtUtil jwtUtil;
 
-    public WebSecurity(JwtFilter jwtFilter) {
-        this.jwtFilter = jwtFilter;
+    public WebSecurity(JwtUtil jwtUtil) {
+        this.jwtUtil = jwtUtil;
     }
 
     @Bean
@@ -26,15 +26,16 @@ public class WebSecurity {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/api/members/login").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/members/users").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/members/example").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/members/example").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/member-service/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/member-service/users").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/member-service/example").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/member-service/example").permitAll()
+//                        .requestMatchers(HttpMethod.GET,"/api/member-service/client/project/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtFilter(jwtUtil), UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 

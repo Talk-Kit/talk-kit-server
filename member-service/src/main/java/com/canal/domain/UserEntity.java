@@ -1,6 +1,6 @@
 package com.canal.domain;
 
-import com.domain.entity.BaseEntity;
+import com.canal.entity.BaseEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.Data;

@@ -1,5 +1,14 @@
 dependencies {
     implementation(project(":canal-helper"))
+    implementation 'jakarta.validation:jakarta.validation-api'
+    implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    implementation 'io.github.openfeign:feign-core:11.10'
+    implementation 'io.github.openfeign:feign-slf4j:11.10'  // 로깅을 위한 추가 종속성
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 }
+

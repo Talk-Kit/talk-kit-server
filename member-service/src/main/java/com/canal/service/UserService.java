@@ -9,11 +9,6 @@ import com.canal.security.JwtUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -26,30 +21,32 @@ public class UserService  {
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder pwdEncoder;
     private final ModelMapper modelMapper;
-    private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
 
 
     public UserService(UserRepository userRepository, BCryptPasswordEncoder pwdEncoder, ModelMapper modelMapper,
-                       AuthenticationManager authManager, JwtUtil jwtUtil) {
+                       JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
-        this.authManager = authManager;
         this.userRepository = userRepository;
         this.pwdEncoder = pwdEncoder;
         this.modelMapper = modelMapper;
     }
 
     public String authenticateAndGenerateToken(RequestLoginRecord requestLoginRecord){
+        UserEntity user = userRepository.findByUserId(requestLoginRecord.userId());
+        if (user == null) {
+            throw new IllegalArgumentException("user null");
+        }
+        if (!pwdEncoder.matches(requestLoginRecord.userPwd(), user.getUserPwd())){
+            throw new IllegalArgumentException("invalid userPwd or userId");
+        }
 
-        Authentication authentication = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(requestLoginRecord.userId(), requestLoginRecord.userPwd()));
-        return jwtUtil.generateToken(authentication.getName());
+        return jwtUtil.generateToken(requestLoginRecord.userId());
     }
 
     public boolean createUser(RequestJoin requestJoin) {
 
         try{
-            System.out.println(requestJoin);
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
             UserEntity userEntity = modelMapper.map(requestJoin, UserEntity.class);
@@ -65,12 +62,17 @@ public class UserService  {
 
     public ResponseUsersRecord getUserByUserSeq(Long userSeq) {
         UserEntity userEntity = userRepository.findByUserSeq(userSeq);
-
         if (userEntity == null) {
-            throw new UsernameNotFoundException("User not found");
+            throw new IllegalArgumentException("User not found");
         }
-
         return new ResponseUsersRecord(userEntity);
+    }
+    public Long getUserSeqByUserId(String userId) {
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if (userEntity == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        return userEntity.getUserSeq();
     }
 
     public List<ResponseUsersRecord> getAllUsers() {

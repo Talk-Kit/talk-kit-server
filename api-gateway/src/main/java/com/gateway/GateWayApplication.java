@@ -8,8 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
 @EnableDiscoveryClient
-//@ComponentScan({"com.gateway.filters"})
-
 public class GateWayApplication {
 
 	public static void main(String[] args) {
