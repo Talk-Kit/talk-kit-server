@@ -82,7 +82,7 @@ jobs:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: gradle :project-service:jib -Djib.to.image=${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_PROJECT }}:${{ env.IMAGE_TAG }}
 
-      - name: Build and Push Docker Image with Jib Project
+      - name: Build and Push Docker Image with Jib Community
         env:
           IMAGE_TAG: ${{ env.IMAGE_TAG }}
         run: gradle :community-service:jib -Djib.to.image=${{ secrets.DOCKER_REPOSITORY }}/${{ secrets.DOCKER_IMAGE_COMMUNITY }}:${{ env.IMAGE_TAG }}
