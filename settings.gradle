@@ -6,4 +6,5 @@ include 'canal-helper'
 include 'eureka'
 include 'api-gateway'
 include 'project-service'
+include 'community-service'
 

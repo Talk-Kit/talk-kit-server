@@ -3,6 +3,7 @@ package com.canal.entity;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @EntityListeners(value = AuditingEntityListener.class)
 @NoArgsConstructor
 @Getter
+@Setter
 public class BaseEntity {
 
     @CreatedDate
@@ -20,6 +22,7 @@ public class BaseEntity {
     private LocalDateTime createdAt;
 
     @LastModifiedDate
-    @Column(name = "updated_at",updatable = false)
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
 }
