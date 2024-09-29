@@ -8,7 +8,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "reply")
 public class ReplyEntity extends BaseEntity {
     @Id
