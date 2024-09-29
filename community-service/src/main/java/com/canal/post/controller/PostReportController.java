@@ -23,35 +23,19 @@ public class PostReportController {
     // 게시글 신고 작성
     @PostMapping("/new/{postSeq}")
     public ResponseEntity<?> addPostReport(@RequestBody RequestAddPostReport requestAddPostReport, @PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        boolean success = postReportService.createPostReport(requestAddPostReport, postSeq, httpServletRequest);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).body("게시물 신고 성공");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신고 실패");
-        }
+        return postReportService.createPostReport(requestAddPostReport, postSeq, httpServletRequest);
     }
 
     // 게시글 신고 수정
     @PutMapping("/update/{reportSeq}")
     public ResponseEntity<?> updatePostReport(@RequestBody RequestChangePostReport requestChangePostReport, @PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
-        boolean success = postReportService.updatePostReport(requestChangePostReport, reportSeq, httpServletRequest);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).body("게시물 신고 수정 성공");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신소 수정 실패");
-        }
+        return postReportService.updatePostReport(requestChangePostReport, reportSeq, httpServletRequest);
     }
 
     // 게시글 신고 삭제
     @DeleteMapping("/delete/{reportSeq}")
-    public String deletePostReport(@PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
-        PostReportEntity deletedPostEntity = postReportService.deletePostReport(reportSeq, httpServletRequest);
-        if(deletedPostEntity == null) {
-            return "게시물 신고 삭제 실패";
-        }
-        else{
-            return "게시물 신고 삭제 성공";
-        }
+    public ResponseEntity<?> deletePostReport(@PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
+        return postReportService.deletePostReport(reportSeq, httpServletRequest);
     }
 
     // 삭제되지 않은 게시글 신고 내역 가져오기

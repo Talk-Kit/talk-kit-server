@@ -22,24 +22,13 @@ public class PostLikeController {
     // 게시글 좋아요
     @PostMapping("/new/{postSeq}")
     public ResponseEntity<?> addPostLike(@RequestBody RequestAddPostLike requestAddPostLike, @PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        boolean success = postLikeService.createPostLike(requestAddPostLike, postSeq, httpServletRequest);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).body("게시물 좋아요 성공");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 실패");
-        }
+        return postLikeService.createPostLike(requestAddPostLike, postSeq, httpServletRequest);
     }
 
     // 게시글 좋아요 취소
     @DeleteMapping("/delete/{likeSeq}")
-    public String deletePostLike(@PathVariable Long likeSeq, HttpServletRequest httpServletRequest) {
-        PostLikeEntity deletedPostLikeEntity = postLikeService.deletePostLike(likeSeq, httpServletRequest);
-        if(deletedPostLikeEntity == null) {
-            return "게시글 좋아요 취소 실패";
-        }
-        else{
-            return "게시글 좋아요 취소 성공";
-        }
+    public ResponseEntity<?> deletePostLike(@PathVariable Long likeSeq, HttpServletRequest httpServletRequest) {
+        return postLikeService.deletePostLike(likeSeq, httpServletRequest);
     }
 
     // 모든 게시글 삭제되지 않은 좋아요 가져오기

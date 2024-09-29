@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -35,4 +37,20 @@ public class PostReportEntity extends BaseEntity {
 
     @Column(name = "post_seq", nullable = false)
     private Long postSeq;
+
+    public void createPostReport(Long reportUserSeq, Long reportedUserSeq, Long postSeq){
+        this.reportUserSeq = reportUserSeq;
+        this.reportedUserSeq = reportedUserSeq;
+        this.postSeq = postSeq;
+    }
+
+    public void updatePostReport(String reportReason){
+        this.reportReason = reportReason;
+        setUpdatedAt(LocalDateTime.now());
+    }
+
+    public void deletePostReport(){
+        this.deleted = true;
+        setUpdatedAt(LocalDateTime.now());
+    }
 }

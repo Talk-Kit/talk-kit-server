@@ -13,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -30,7 +32,7 @@ public class PostService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 작성
-    public boolean createPost(RequestAddPost requestAddPost, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -42,14 +44,14 @@ public class PostService {
             PostEntity postEntity = modelMapper.map(requestAddPost, PostEntity.class);
             postEntity.setUserSeq(userSeq);
             postRepository.save(postEntity);
-            return true;
+            return ResponseEntity.status(HttpStatus.OK).body("게시물 생성 성공");
         }catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 생성 실패");
         }
     }
 
     // 게시글 수정
-    public boolean updatePost(RequestChangePost requestChangePost, Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> updatePost(RequestChangePost requestChangePost, Long postSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -63,25 +65,23 @@ public class PostService {
 
                 PostEntity changePostEntity = modelMapper.map(requestChangePost, PostEntity.class);
 
-                postEntity.setPostContent(changePostEntity.getPostContent());
-                postEntity.setPostTitle(changePostEntity.getPostTitle());
-                postEntity.setPostType(changePostEntity.getPostType());
-                postEntity.setUpdatedAt(LocalDateTime.now());
+                postEntity.updatePost(changePostEntity.getPostTitle(), changePostEntity.getPostType(),
+                        changePostEntity.getPostContent(), LocalDateTime.now());
 
                 postRepository.save(postEntity);
 
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 수정 실패");
             }
         }catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 수정 실패");
         }
     }
 
     // 게시글 삭제
-    public boolean delete(Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> delete(Long postSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -93,17 +93,16 @@ public class PostService {
             if(postEntity != null && !postEntity.isDeleted()){
                 modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
-                postEntity.setDeleted(true);
-                postEntity.setUpdatedAt(LocalDateTime.now());
+                postEntity.deletePost();
                 postRepository.save(postEntity);
 
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 삭제 성공");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 삭제 실패");
             }
         }catch (Exception e){
-            return true;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 삭제 실패");
         }
     }
 

@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -25,5 +27,10 @@ public class PostLikeEntity extends BaseEntity {
 
     @Column(name = "post_seq", nullable = false)
     private Long postSeq;
+
+    public void deletePostLike(){
+        this.deleted = true;
+        setUpdatedAt(LocalDateTime.now());
+    }
 
 }

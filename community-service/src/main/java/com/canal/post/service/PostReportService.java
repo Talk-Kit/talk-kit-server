@@ -15,6 +15,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -33,7 +35,7 @@ public class PostReportService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 신고 작성
-    public boolean createPostReport(RequestAddPostReport requestAddPostReport, Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPostReport(RequestAddPostReport requestAddPostReport, Long postSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -48,23 +50,21 @@ public class PostReportService {
 
                 modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
                 PostReportEntity postReportEntity = modelMapper.map(requestAddPostReport, PostReportEntity.class);
-                postReportEntity.setReportUserSeq(userSeq);
-                postReportEntity.setReportedUserSeq(reportedUser);
-                postReportEntity.setPostSeq(postSeq);
+                postReportEntity.createPostReport(userSeq, reportedUser, postSeq);
                 postReportRepository.save(postReportEntity);
 
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 신고 성공");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신고 실패");
             }
         }catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신고 실패");
         }
     }
 
     // 게시글 신고 수정
-    public boolean updatePostReport(RequestChangePostReport requestChangePostReport, Long reportSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> updatePostReport(RequestChangePostReport requestChangePostReport, Long reportSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -78,21 +78,20 @@ public class PostReportService {
 
                 PostReportEntity changePostReportEntity = modelMapper.map(requestChangePostReport, PostReportEntity.class);
 
-                postReportEntity.setReportReason(changePostReportEntity.getReportReason());
-                postReportEntity.setUpdatedAt(LocalDateTime.now());
+                postReportEntity.updatePostReport(changePostReportEntity.getReportReason());
                 postReportRepository.save(postReportEntity);
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 신고 수정 성공");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신소 수정 실패");
             }
         }catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신소 수정 실패");
         }
     }
 
     // 게시글 신고 삭제
-    public PostReportEntity deletePostReport(Long reportSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> deletePostReport(Long reportSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -102,16 +101,15 @@ public class PostReportService {
             // 신고 존재 여부 확인
             PostReportEntity postReportEntity = postReportRepository.findByReportSeqAndReportUserSeq(reportSeq, userSeq);
             if(postReportEntity != null || !postReportEntity.isDeleted()){
-                postReportEntity.setDeleted(true);
-                postReportEntity.setUpdatedAt(LocalDateTime.now());
+                postReportEntity.deletePostReport();
                 postReportRepository.save(postReportEntity);
-                return postReportEntity;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 신고 삭제 성공");
             }
             else{
-                return null;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신고 삭제 실패");
             }
         }catch (Exception e){
-            return null;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 신고 삭제 실패\"");
         }
     }
 

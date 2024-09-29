@@ -22,35 +22,19 @@ public class PostController {
     // 게시글 작성
     @PostMapping("/new")
     public ResponseEntity<?> addPost(@RequestBody RequestAddPost requestAddPost, HttpServletRequest httpServletRequest) {
-        boolean success  = postService.createPost(requestAddPost,httpServletRequest);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).body("게시물 생성 성공");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 생성 실패");
-        }
+        return postService.createPost(requestAddPost,httpServletRequest);
     }
 
     // 게시글 수정
     @PutMapping("/update/{postSeq}")
     public ResponseEntity<?> updatePost(@RequestBody RequestChangePost requestChangePost, @PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        boolean success  = postService.updatePost(requestChangePost, postSeq, httpServletRequest);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 수정 실패");
-        }
+        return postService.updatePost(requestChangePost, postSeq, httpServletRequest);
     }
 
     // 게시글 삭제
     @DeleteMapping("/delete/{postSeq}")
-    public String deletePost(@PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        boolean success = postService.delete(postSeq, httpServletRequest);
-        if(success) {
-            return "게시물 삭제 성공";
-        }
-        else{
-            return "게시물 삭제 실패";
-        }
+    public ResponseEntity<?> deletePost(@PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
+        return postService.delete(postSeq, httpServletRequest);
     }
 
     // 삭제되지 않은 모든 게시글 가져오기

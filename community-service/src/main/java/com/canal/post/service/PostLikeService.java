@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -33,7 +35,7 @@ public class PostLikeService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 좋아요
-    public boolean createPostLike(@RequestBody RequestAddPostLike requestAddPostLike, Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPostLike(@RequestBody RequestAddPostLike requestAddPostLike, Long postSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -55,18 +57,18 @@ public class PostLikeService {
                 postEntity.setPostLikeNum(postEntity.getPostLikeNum()+1);
                 postRepository.save(postEntity);
 
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 좋아요 성공");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 실패");
             }
         }catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 실패");
         }
     }
 
     // 게시글 좋아요 취소
-    public PostLikeEntity deletePostLike(Long likeSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> deletePostLike(Long likeSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -76,8 +78,7 @@ public class PostLikeService {
             // 좋아요 존재 여부 확인
             PostLikeEntity postLikeEntity = postLikeRepository.findByLikeSeqAndUserSeq(likeSeq, userSeq);
             if(postLikeEntity != null && !postLikeEntity.isDeleted()){
-                postLikeEntity.setDeleted(true);
-                postLikeEntity.setUpdatedAt(LocalDateTime.now());
+                postLikeEntity.deletePostLike();
                 postLikeRepository.save(postLikeEntity);
 
                 // post 테이블 post_like_num update
@@ -85,13 +86,13 @@ public class PostLikeService {
                 postEntity.setPostLikeNum(postEntity.getPostLikeNum()-1);
                 postRepository.save(postEntity);
 
-                return postLikeEntity;
+                return ResponseEntity.status(HttpStatus.OK).body("게시물 좋아요 취소 성공");
             }
             else{
-                return null;
+                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 취소 실패");
             }
         }catch (Exception e){
-            return null;
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 취소 실패");
         }
     }
 

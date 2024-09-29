@@ -6,6 +6,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Data
 @NoArgsConstructor
@@ -38,5 +40,17 @@ public class PostEntity extends BaseEntity {
 
     @Column(name = "user_seq", nullable = false, updatable = false)
     private Long userSeq;
+
+    public void updatePost(String postTitle, int postType, String postContent, LocalDateTime updatedAt){
+        this.postTitle = postTitle;
+        this.postType = postType;
+        this.postContent = postContent;
+        setUpdatedAt(updatedAt);
+    }
+
+    public void deletePost(){
+        this.deleted = true;
+        setUpdatedAt(LocalDateTime.now());
+    }
 
 }
