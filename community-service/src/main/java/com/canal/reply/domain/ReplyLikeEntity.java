@@ -3,11 +3,13 @@ package com.canal.reply.domain;
 import com.canal.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
+@EqualsAndHashCode(callSuper=false)
 @Table(name = "reply_like")
 public class ReplyLikeEntity extends BaseEntity {
     @Id
