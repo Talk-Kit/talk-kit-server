@@ -9,7 +9,6 @@ import org.hibernate.annotations.ColumnDefault;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper=false)
 @Table(name = "reply_report")
 public class ReplyReportEntity extends BaseEntity {
     @Id
