@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@EqualsAndHashCode(callSuper=false)
 @Table(name = "post_like")
 public class PostLikeEntity extends BaseEntity {
     @Id
