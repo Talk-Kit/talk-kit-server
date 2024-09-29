@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "post")
 public class PostEntity extends BaseEntity {
     @Id

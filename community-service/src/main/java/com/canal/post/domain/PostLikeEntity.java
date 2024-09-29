@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "post_like")
 public class PostLikeEntity extends BaseEntity {
     @Id
