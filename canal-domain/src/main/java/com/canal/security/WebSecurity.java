@@ -26,10 +26,10 @@ public class WebSecurity {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/api/member-service/login").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/member-service/users").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/member-service/example").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/member-service/example").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/users").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/example").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/user-service/example").permitAll()
 //                        .requestMatchers(HttpMethod.GET,"/api/member-service/client/project/**").authenticated()
                         .anyRequest().authenticated()
                 )
