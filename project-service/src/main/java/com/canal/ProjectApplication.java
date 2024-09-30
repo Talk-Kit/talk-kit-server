@@ -8,11 +8,13 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableDiscoveryClient
 @EnableFeignClients
 @EnableAsync
+@EnableScheduling
 @EnableJpaAuditing
 public class ProjectApplication {
     public static void main(String[] args) {
@@ -21,4 +23,5 @@ public class ProjectApplication {
 
     @Bean
     public ModelMapper modelMapper() { return new ModelMapper(); }
+
 }

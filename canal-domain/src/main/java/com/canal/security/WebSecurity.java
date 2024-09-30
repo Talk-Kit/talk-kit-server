@@ -30,7 +30,6 @@ public class WebSecurity {
                         .requestMatchers(HttpMethod.POST,"/api/member-service/users").permitAll()
                         .requestMatchers(HttpMethod.POST,"/api/member-service/example").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/member-service/example").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/api/member-service/client/project/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
