@@ -116,7 +116,7 @@ project(':api-gateway') {
 
     }
 }
-project(':member-service') {
+project(':user-service') {
     def dockerRepository = System.getenv('DOCKER_REPOSITORY')
     def dockerImage = System.getenv('DOCKER_IMAGE_USER')
     def serverEnv = System.getenv('SERVER_ENV')
@@ -178,6 +178,37 @@ project(':project-service') {
         implementation(project(":canal-helper"))
     }
 }
+project(':community-service') {
+    def dockerRepository = System.getenv('DOCKER_REPOSITORY')
+    def dockerImage = System.getenv('DOCKER_IMAGE_COMMUNITY')
+    def serverEnv = System.getenv('SERVER_ENV')
+    def mainClass = System.getenv('MAIN_CLASS_COMMUNITY')
+    def containerPort = System.getenv('CONTAINER_PORT_COMMUNITY')
+    def imageTag = System.getenv('IMAGE_TAG')
+
+    if (serverEnv == 'dev') {
+        jib {
+            from {
+                image = 'openjdk:17'
+            }
+            to {
+                image = "${dockerRepository}/${dockerImage}"
+                tags = [imageTag]
+            }
+            container {
+                mainClass = mainClass
+                jvmFlags = ['-Dspring.profiles.active=dev', '-Dfile.encoding=UTF-8']
+                ports = [containerPort]
+                allowInsecureRegistries = true
+            }
+        }
+    }
+
+    dependencies {
+        implementation(project(":canal-domain"))
+        implementation(project(":canal-helper"))
+    }
+}
 
 project(':canal-domain') {
     dependencies {
@@ -212,14 +243,19 @@ tasks {
         into("api-gateway/src/main/resources")
     }
     copy {
-        from("./talk-kit-secret/eureka/client/member")
+        from("./talk-kit-secret/eureka/client/user")
         include("application*.yml")
-        into("member-service/src/main/resources")
+        into("user-service/src/main/resources")
     }
     copy {
         from("./talk-kit-secret/eureka/client/project")
         include("application*.yml")
         into("project-service/src/main/resources")
+    }
+    copy {
+        from("./talk-kit-secret/eureka/client/community")
+        include("application*.yml")
+        into("community-service/src/main/resources")
     }
     copy {
         from("./talk-kit-secret/eureka/client/core")
