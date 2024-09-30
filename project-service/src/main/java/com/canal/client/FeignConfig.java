@@ -19,7 +19,7 @@ public class FeignConfig { // feign client 요청시 Authorization token 가로�
                 HttpServletRequest request = attri.getRequest();
 
                 // userSeq를 찾기 위한 member-service로의 요청만 Authorization Header를 가로챔
-                if (requestTemplate.feignTarget().name().equals("member-service")){
+                if (requestTemplate.feignTarget().name().equals("user-service")){
                     String authorization = request.getHeader("Authorization");
                     if(authorization != null && authorization.startsWith("Bearer ")){
                         requestTemplate.header("Authorization", authorization);
