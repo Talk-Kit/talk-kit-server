@@ -3,7 +3,6 @@ package com.canal.controller;
 import com.canal.dto.RequestJoin;
 import com.canal.dto.RequestLoginRecord;
 import com.canal.dto.ResponseUsersRecord;
-import com.canal.security.JwtUtil;
 import com.canal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,12 +16,12 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/member-service")
 @Slf4j
-public class MemberController {
+public class UserController {
 
 	private final UserService userService;
 
 	@Autowired
-	public MemberController(UserService userService) {
+	public UserController(UserService userService) {
 		this.userService = userService;
 	}
 

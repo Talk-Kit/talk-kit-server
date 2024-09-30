@@ -1,6 +1,6 @@
 rootProject.name = 'canal-server'
 
-include 'member-service'
+include 'user-service'
 include 'canal-domain'
 include 'canal-helper'
 include 'eureka'
