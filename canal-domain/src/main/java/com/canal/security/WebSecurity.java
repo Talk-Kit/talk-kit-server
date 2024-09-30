@@ -26,12 +26,14 @@ public class WebSecurity {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/api/user-service/login").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/user-service/users").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/api/user-service/example").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/api/user-service/example").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/user-service/login").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/user-service/users").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/user-service/example").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/user-service/emailConfirm").permitAll()
+                                .requestMatchers(HttpMethod.POST,"/api/user-service/emailCodeConfirm").permitAll()
+                                .requestMatchers(HttpMethod.GET,"/api/user-service/example").permitAll()
 //                        .requestMatchers(HttpMethod.GET,"/api/member-service/client/project/**").authenticated()
-                        .anyRequest().authenticated()
+                                .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))

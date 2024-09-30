@@ -1,8 +1,6 @@
 package com.canal.controller;
 
-import com.canal.dto.RequestJoin;
-import com.canal.dto.RequestLoginRecord;
-import com.canal.dto.ResponseUsersRecord;
+import com.canal.dto.*;
 import com.canal.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -83,4 +81,16 @@ public class UserController {
 	public String examplePostController() {
 		return "TEST-Post3";
 	}
+
+	// 이메일 인증
+	@PostMapping("/emailConfirm")
+	public String sendEmail(@RequestBody RequestMailCheck requestMailCheck) {
+		return userService.sendEmail(requestMailCheck) ? "인증 번호 발송 성공" : "인증 번호 발송 실패";
+	}
+
+	@PostMapping("/emailCodeConfirm")
+	public String sendEmailPath(@RequestBody RequestMailCodeCheck requestMailCodeCheck) {
+		return userService.verifyEmailCode(requestMailCodeCheck) ? "인증 번호 인증 성공" : "인증 번호 인증 실패";
+	}
+
 }
