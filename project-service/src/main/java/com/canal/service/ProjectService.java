@@ -183,6 +183,21 @@ public class ProjectService {
             return false;
         }
     }
+    public boolean saveScript(Long projectSeq,RequestScript requestScript){
+        try{
+            log.info(requestScript.fileName());
+            log.info(requestScript.fileContent());
+            FileEntity fileEntity = new FileEntity();
+            fileEntity.setProjectSeq(projectSeq);
+            fileEntity.setFileContent(requestScript.fileContent());
+            fileEntity.setFileName(requestScript.fileName());
+            fileRepository.save(fileEntity);
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
+    }
     public ResponseFiles getFile(Long fileSeq){
         try {
             FileEntity fileEntity = fileRepository.findByFileSeqAndDeleted(fileSeq,false);
@@ -261,6 +276,37 @@ public class ProjectService {
             String objectName = variables[1];
             nhnStorageClient.deletefile(folder,objectName,nhnToken);
         });
+    }
+    public Iterable<ResponseProjectsByClient> getAllProjectsByClient(String userId){
+        try{
+            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Iterable<ProjectEntity> entityList = projectRepository.findByUserSeqAndDeleted(userSeq,false);
+            List<ResponseProjectsByClient> projectList = new ArrayList<>();
+            entityList.forEach(project-> projectList.add(new ResponseProjectsByClient(project.getProjectSeq(),project.getProjectName())));
+            return projectList;
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+    @Transactional
+    public boolean createProjectByClient(String projectName, String userId){
+        try{
+            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            ProjectEntity projectEntity = projectRepository.findByProjectNameAndUserSeqAndDeleted(projectName,userSeq,false);
+            if(projectEntity != null){
+                return false;
+            }else{
+                projectEntity = new ProjectEntity();
+                projectEntity.setProjectName(projectName);
+                projectEntity.setUserSeq(userSeq);
+                projectRepository.save(projectEntity);
+                return true;
+            }
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
+        }
     }
 
     private Long getUserSeq(HttpServletRequest httpServletRequest){

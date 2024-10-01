@@ -3,6 +3,7 @@ package com.canal.domain;
 import com.canal.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.extern.java.Log;
 
 @Data
 @Entity
@@ -16,7 +17,8 @@ public class FileEntity extends BaseEntity {
     @Column(name = "file_name", nullable = false)
     private String fileName = "새로운 파일";
 
-    @Column(name = "file_content")
+    @Lob
+    @Column(name = "file_content", columnDefinition = "LONGTEXT")
     private String fileContent;
 
     @Column(name = "file_url")
