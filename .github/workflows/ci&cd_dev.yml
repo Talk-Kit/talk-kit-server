@@ -12,6 +12,7 @@ env:
   MAIN_CLASS: ${{ secrets.MAIN_CLASS }}
   CONTAINER_PORT: ${{ secrets.CONTAINER_PORT }}
 
+  MAIN_CLASS_USER: ${{ secrets.MAIN_CLASS_USER }}
   CONTAINER_PORT_USER: ${{ secrets.CONTAINER_PORT_USER }}
 
   MAIN_CLASS_EUREKA: ${{ secrets.MAIN_CLASS_EUREKA }}
