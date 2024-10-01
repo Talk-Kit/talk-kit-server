@@ -11,6 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.List;
 
 
 @RestController
@@ -136,6 +138,24 @@ public class ProjectController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("삭제완료");
     }
+    /*for feign client*/
+    @PostMapping("/client/file/{projectSeq}")
+    public boolean saveScript(@PathVariable("projectSeq")Long projectSeq,
+                                        @RequestBody RequestScript requestScript){
+        return projectService.saveScript(projectSeq,requestScript);
+    }
+
+    @PostMapping("/client/project")
+    public boolean createProjectByClient(@RequestBody RequestNewProjectByClient requsetProject){
+        return projectService.createProjectByClient(requsetProject.projectName(),requsetProject.userId());
+    }
+
+    @GetMapping("/client/projects/{userId}")
+    public Iterable<ResponseProjectsByClient> getAllProjectsByClient(@PathVariable("userId") String userId){
+        Iterable<ResponseProjectsByClient> responseList = projectService.getAllProjectsByClient(userId);
+        return responseList;
+    }
+
 
 
 }
