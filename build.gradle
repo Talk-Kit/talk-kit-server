@@ -120,7 +120,7 @@ project(':user-service') {
     def dockerRepository = System.getenv('DOCKER_REPOSITORY')
     def dockerImage = System.getenv('DOCKER_IMAGE_USER')
     def serverEnv = System.getenv('SERVER_ENV')
-    def mainClass = System.getenv('MAIN_CLASS')
+    def mainClass = System.getenv('MAIN_CLASS_USER')
     def containerPort = System.getenv('CONTAINER_PORT_USER')
 //    def imageTag = System.getenv('IMAGE_TAG')
 
