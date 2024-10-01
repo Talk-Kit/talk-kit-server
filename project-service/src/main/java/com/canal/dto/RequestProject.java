@@ -3,6 +3,6 @@ package com.canal.dto;
 import lombok.Data;
 
 @Data
-public class RequestProjectRecord{
+public class RequestProject {
         String projectName;
 }
