@@ -32,7 +32,6 @@ public class WebSecurity {
                                 .requestMatchers(HttpMethod.POST,"/api/user-service/emailConfirm").permitAll()
                                 .requestMatchers(HttpMethod.POST,"/api/user-service/emailCodeConfirm").permitAll()
                                 .requestMatchers(HttpMethod.GET,"/api/user-service/example").permitAll()
-//                        .requestMatchers(HttpMethod.GET,"/api/member-service/client/project/**").authenticated()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
