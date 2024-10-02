@@ -31,9 +31,7 @@ public class ScriptService {
 
     public boolean requestSaveScript(Long projectSeq, RequestScript requestScript){
         boolean success = projectServiceClient.saveScript(projectSeq,requestScript);
-        if (!success){
-            return false;
-        }
+        if (!success){ return false;}
         return true;
     }
     public String requestGpt(RequestContent requestContent) {

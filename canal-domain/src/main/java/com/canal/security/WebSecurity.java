@@ -33,7 +33,7 @@ public class WebSecurity {
                         .requestMatchers(HttpMethod.POST,"/api/user-service/emailCodeConfirm").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/user-service/v3/api-docs/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/project-service/v3/api-docs/**")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/api/script-service/v3/api-docs/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/script-service/v3/api-docs")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community-service/v3/api-docs/**")).permitAll()
                                 .anyRequest().authenticated()
                 )
