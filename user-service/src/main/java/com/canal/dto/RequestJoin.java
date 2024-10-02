@@ -23,4 +23,13 @@ public class RequestJoin {
 
     @NotNull(message = "소속은 null일 수 없습니다.")
     private String userAffiliation;
+
+    @NotNull
+    private boolean talkKit;
+
+    @NotNull
+    private boolean personalInformation;
+
+    @NotNull
+    private boolean marketing;
 }
