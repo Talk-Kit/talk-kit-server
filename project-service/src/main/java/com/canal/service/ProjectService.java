@@ -185,8 +185,6 @@ public class ProjectService {
     }
     public boolean saveScript(Long projectSeq,RequestScript requestScript){
         try{
-            log.info(requestScript.fileName());
-            log.info(requestScript.fileContent());
             FileEntity fileEntity = new FileEntity();
             fileEntity.setProjectSeq(projectSeq);
             fileEntity.setFileContent(requestScript.fileContent());
@@ -266,7 +264,6 @@ public class ProjectService {
         String nhnToken = nhnAuthService.getNHNToken();
 
         List<FileEntity> oldFileList = fileRepository.findAllByDeletedAndUpdatedAtBefore(true,twoWeeksAgo);
-        log.info("삭제예정파일 개수: " + oldFileList.size());
         oldFileList.forEach(value -> {
             // 디비 삭제
             fileRepository.delete(value);
