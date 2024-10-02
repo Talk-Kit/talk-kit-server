@@ -89,6 +89,54 @@ public class UserService  {
         return userList;
     }
 
+    // 이메일 존재 여부 확인
+    public boolean existUserEmail(RequestMailCheck requestMailCheck) {
+        try{
+            UserEntity user = userRepository.findByUserEmail(requestMailCheck.getUserEmail());
+            if(user == null || user.isDeleted()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
+    // 아이디 존재 여부 확인
+    public boolean existUserId(RequestUserIdCheck requestUserIdCheck) {
+        try{
+            UserEntity user = userRepository.findByUserId(requestUserIdCheck.getUserId());
+            if(user == null || user.isDeleted()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
+    // 닉네임 존재 여부 확인
+    public boolean existUserNickname(RequestUserNicknameCheck requestUserNicknameCheck) {
+        try {
+            UserEntity user = userRepository.findByUserNickname(requestUserNicknameCheck.getUserNickname());
+            if(user == null || user.isDeleted()){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }
+        catch (Exception e){
+            return false;
+        }
+    }
+
     // 랜덤 인증 코드 생성
     public String createNumber() {
         int leftLimit = 48; // number '0'
