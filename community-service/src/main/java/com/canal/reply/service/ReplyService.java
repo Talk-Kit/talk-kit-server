@@ -174,19 +174,6 @@ public class ReplyService {
         }
     }
 
-    // 삭제되지 않은 모든 댓글, 대댓글 가져오기
-    public List<ResponseReplyRecord> getAllReply() {
-        List<ReplyEntity> posts = replyRepository.findAll();
-        List<ResponseReplyRecord> userList = new ArrayList<>();
-        posts.forEach(reply -> {
-            if(!reply.isDeleted()){
-                userList.add(new ResponseReplyRecord(reply));
-            }
-        });
-
-        return userList;
-    }
-
     // 게시글 별 삭제되지 않은 모든 댓글, 대댓글 가져오기
     public List<ResponseReplyRecord> getAllReplyByPostSeq(Long postSeq) {
         List<ReplyEntity> replys = replyRepository.findByPostSeqOrderByReplyOrderAscReplyDepth(postSeq);

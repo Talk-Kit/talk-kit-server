@@ -35,7 +35,7 @@ public class PostLikeService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 좋아요
-    public ResponseEntity<?> createPostLike(@RequestBody RequestAddPostLike requestAddPostLike, Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPostLike(Long postSeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -46,8 +46,6 @@ public class PostLikeService {
             PostLikeEntity postLikeEntity = postLikeRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
             if(postLikeEntity == null || postLikeEntity.isDeleted()){
                 // entity 저장
-                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-                postLikeEntity = modelMapper.map(requestAddPostLike, PostLikeEntity.class);
                 postLikeEntity.setUserSeq(userSeq);
                 postLikeEntity.setPostSeq(postSeq);
                 postLikeRepository.save(postLikeEntity);
@@ -96,30 +94,23 @@ public class PostLikeService {
         }
     }
 
-    // 모든 게시글 삭제되지 않은 좋아요 가져오기
-    public List<ResponsePostLikeRecord> getAllPostLike() {
-        List<PostLikeEntity> posts = postLikeRepository.findAll();
-        List<ResponsePostLikeRecord> likeList = new ArrayList<>();
-        posts.forEach(like -> {
-            if(!like.isDeleted()){
-                likeList.add(new ResponsePostLikeRecord(like));
-            }
-        });
-
-        return likeList;
-    }
-
     // 게시글 별 삭제되지 않은 좋아요 가져오기
-    public List<ResponsePostLikeRecord> getAllPostLikeByPostSeq(Long postSeq) {
-        List<PostLikeEntity> posts = postLikeRepository.findByPostSeq(postSeq);
-        List<ResponsePostLikeRecord> likeList = new ArrayList<>();
-        posts.forEach(like -> {
-            if(!like.isDeleted()){
-                likeList.add(new ResponsePostLikeRecord(like));
-            }
-        });
+    public int getAllPostLikeByPostSeq(Long postSeq) {
+        try{
+            List<PostLikeEntity> posts = postLikeRepository.findByPostSeq(postSeq);
+            List<ResponsePostLikeRecord> likeList = new ArrayList<>();
+            posts.forEach(like -> {
+                if(!like.isDeleted()){
+                    likeList.add(new ResponsePostLikeRecord(like));
+                }
+            });
 
-        return likeList;
+            System.out.println(likeList.size());
+            return likeList.size();
+        }
+        catch (Exception e){
+            return 0;
+        }
     }
 
 }

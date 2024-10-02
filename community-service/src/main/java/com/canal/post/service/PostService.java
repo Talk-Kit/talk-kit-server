@@ -106,19 +106,6 @@ public class PostService {
         }
     }
 
-    // 삭제되지 않은 모든 게시글 가져오기
-    public List<ResponsePostRecord> getAllPost() {
-        List<PostEntity> posts = postRepository.findAll();
-        List<ResponsePostRecord> userList = new ArrayList<>();
-        posts.forEach(post -> {
-            if(!post.isDeleted()){
-                userList.add(new ResponsePostRecord(post));
-            }
-        });
-
-        return userList;
-    }
-
     // 게시판 유형 별 삭제되지 않은 모든 게시글 가져오기
     public List<ResponsePostRecord> getAllPostByPostType(int postType) {
         List<PostEntity> posts = postRepository.findByPostType(postType);
