@@ -14,7 +14,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @RequiredArgsConstructor
 @OpenAPIDefinition(
-        info = @Info(title = "Script Service API Document",description = "대본 초안을 생성하고 작성하기 위한 서비스의 명세서입니다.",version = "v1")
+        info = @Info(title = "Script Service API Document",
+                description = "대본 초안을 생성하고 작성하기 위한 서비스의 명세서입니다.",version = "v1")
 )
 public class SwaggerConfig {
 
