@@ -47,7 +47,7 @@ public class ProjectController {
     }
 
 
-    @PutMapping("/update/project/{projectSeq}")
+    @PutMapping("/project/update/{projectSeq}")
     public ResponseEntity<String> updateProject(@PathVariable("projectSeq")Long projectSeq,
                                                 @RequestBody RequestProject requestProject,
                                                 HttpServletRequest httpServletRequest) {
@@ -64,7 +64,7 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body("업데이트 성공");
     }
 
-    @DeleteMapping("/delete/project/{projectSeq}")
+    @DeleteMapping("/project/delete/{projectSeq}")
     public ResponseEntity<String> deleteProject(@PathVariable("projectSeq")Long projectSeq){
         boolean success = projectService.deleteProject(projectSeq);
         if (!success){
@@ -130,7 +130,7 @@ public class ProjectController {
     }
 
 
-    @DeleteMapping("/delete/file/{fileSeq}")
+    @DeleteMapping("/file/delete/{fileSeq}")
     public ResponseEntity<String> deleteFile(@PathVariable("fileSeq") Long fileSeq){
         boolean isDeleted = projectService.deleteFile(fileSeq);
         if (!isDeleted){

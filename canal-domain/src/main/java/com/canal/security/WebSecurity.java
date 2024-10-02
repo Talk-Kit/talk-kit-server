@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
 @EnableWebSecurity
@@ -26,12 +27,14 @@ public class WebSecurity {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                                .requestMatchers(HttpMethod.POST,"/api/user-service/login").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/user-service/users").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/user-service/example").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/user-service/emailConfirm").permitAll()
-                                .requestMatchers(HttpMethod.POST,"/api/user-service/emailCodeConfirm").permitAll()
-                                .requestMatchers(HttpMethod.GET,"/api/user-service/example").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/login").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/users").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/emailConfirm").permitAll()
+                        .requestMatchers(HttpMethod.POST,"/api/user-service/emailCodeConfirm").permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/user-service/v3/api-docs/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/project-service/v3/api-docs/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/script-service/v3/api-docs/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/community-service/v3/api-docs/**")).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
