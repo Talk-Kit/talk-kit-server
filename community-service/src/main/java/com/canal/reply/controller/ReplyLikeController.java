@@ -1,9 +1,12 @@
 package com.canal.reply.controller;
 
 import com.canal.reply.domain.ReplyLikeEntity;
-import com.canal.reply.dto.RequestAddReplyLike;
 import com.canal.reply.dto.ResponseReplyLikeRecord;
 import com.canal.reply.service.ReplyLikeService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -15,14 +18,22 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/community-service/reply/like")
 @RequiredArgsConstructor
+@Tag(name = "ReplyLike Controller",description = "댓글 좋아요를 위한 컨트롤러입니다")
 public class ReplyLikeController {
 
     private final ReplyLikeService replyLikeService;
 
-    // 댓글 좋아요
+    @Operation(summary = "댓글 좋아요 API", description = "댓글에 좋아요를 합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "CREATED: 댓글 좋아요 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 댓글 좋아요 실패. 요청값 확인 필요합니다"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
     @PostMapping("/new/{replySeq}")
-    public ResponseEntity<?> addReplyLike(@RequestBody RequestAddReplyLike requestAddReplyLike, @PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
-        boolean success = replyLikeService.createReplyLike(requestAddReplyLike, replySeq, httpServletRequest);
+    public ResponseEntity<?> addReplyLike(@PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
+        boolean success = replyLikeService.createReplyLike(replySeq, httpServletRequest);
         if (success){
             return ResponseEntity.status(HttpStatus.OK).body("댓글 좋아요 성공");
         }else{
@@ -30,7 +41,14 @@ public class ReplyLikeController {
         }
     }
 
-    // 댓글 좋아요 취소
+    @Operation(summary = "댓글 좋아요 취소 API", description = "댓글에 좋아요를 취소 합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "CREATED: 댓글 좋아요 취소 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 댓글 좋아요 취소 실패. 요청값 확인 필요합니다"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
     @DeleteMapping("/delete/{likeSeq}")
     public String deleteReplyLike(@PathVariable Long likeSeq, HttpServletRequest httpServletRequest) {
         ReplyLikeEntity deletedPostLikeEntity = replyLikeService.deleteReplyLike(likeSeq, httpServletRequest);
@@ -42,22 +60,18 @@ public class ReplyLikeController {
         }
     }
 
-    // 모든 댓글 삭제되지 않은 좋아요 가져오기
-    @GetMapping("/list")
-    public ResponseEntity<List<ResponseReplyLikeRecord>> getAllReplyLike() {
+    @Operation(summary = "댓글 별 좋아요 조회 API", description = "댓글 별 삭제되지 않은 모든 좋아요를 조회 합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "CREATED: 댓글 좋아요 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 댓글 좋아요 조회 실패. 요청값 확인 필요합니다"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
+    @GetMapping("/like-num/{replySeq}")
+    public int getAllReplyLikeByPostSeq(@PathVariable Long replySeq) {
 
-        List<ResponseReplyLikeRecord> resultList = replyLikeService.getAllReplyLike();
-
-        return ResponseEntity.status(HttpStatus.OK).body(resultList);
-    }
-
-    // 댓글 별 삭제되지 않은 좋아요 가져오기
-    @GetMapping("/list/{replySeq}")
-    public ResponseEntity<List<ResponseReplyLikeRecord>> getAllReplyLikeByPostSeq(@PathVariable Long replySeq) {
-
-        List<ResponseReplyLikeRecord> resultList = replyLikeService.getAllReplyLikeByPostSeq(replySeq);
-
-        return ResponseEntity.status(HttpStatus.OK).body(resultList);
+        return replyLikeService.getAllReplyLikeByPostSeq(replySeq);
     }
 
 }

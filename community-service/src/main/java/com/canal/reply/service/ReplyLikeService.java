@@ -3,7 +3,6 @@ package com.canal.reply.service;
 import com.canal.client.UserServiceClient;
 import com.canal.reply.domain.ReplyEntity;
 import com.canal.reply.domain.ReplyLikeEntity;
-import com.canal.reply.dto.RequestAddReplyLike;
 import com.canal.reply.dto.ResponseReplyLikeRecord;
 import com.canal.reply.repository.ReplyLikeRepository;
 import com.canal.reply.repository.ReplyRepository;
@@ -35,7 +34,7 @@ public class ReplyLikeService {
     private final UserServiceClient userServiceClient;
 
     // 댓글 좋아요
-    public boolean createReplyLike(@RequestBody RequestAddReplyLike requestAddReplyLike, @PathVariable Long replySeq, HttpServletRequest httpServletRequest){
+    public boolean createReplyLike(@PathVariable Long replySeq, HttpServletRequest httpServletRequest){
         try{
             //userId 추출
             String token = jwtFilter.resolveToken(httpServletRequest);
@@ -50,8 +49,6 @@ public class ReplyLikeService {
                 ReplyLikeEntity replyLikeEntity = replyLikeRepository.findByReplySeqAndUserSeq(replySeq, userSeq);
                 if(replyLikeEntity == null || replyLikeEntity.isDeleted()){
                     // entity 저장
-                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-                    replyLikeEntity = modelMapper.map(requestAddReplyLike, ReplyLikeEntity.class);
                     replyLikeEntity.setUserSeq(userSeq);
                     replyLikeEntity.setReplySeq(replySeq);
                     replyLikeRepository.save(replyLikeEntity);
@@ -105,30 +102,22 @@ public class ReplyLikeService {
         }
     }
 
-    // 모든 댓글 삭제되지 않은 좋아요 가져오기
-    public List<ResponseReplyLikeRecord> getAllReplyLike() {
-        List<ReplyLikeEntity> replys = replyLikeRepository.findAll();
-        List<ResponseReplyLikeRecord> likeList = new ArrayList<>();
-        replys.forEach(like -> {
-            if(!like.isDeleted()){
-                likeList.add(new ResponseReplyLikeRecord(like));
-            }
-        });
-
-        return likeList;
-    }
-
     // 댓글 별 삭제되지 않은 좋아요 가져오기
-    public List<ResponseReplyLikeRecord> getAllReplyLikeByPostSeq(Long replySeq) {
-        List<ReplyLikeEntity> replys = replyLikeRepository.findByReplySeq(replySeq);
-        List<ResponseReplyLikeRecord> likeList = new ArrayList<>();
-        replys.forEach(like -> {
-            if(!like.isDeleted()){
-                likeList.add(new ResponseReplyLikeRecord(like));
-            }
-        });
+    public int getAllReplyLikeByPostSeq(Long replySeq) {
+        try{
+            List<ReplyLikeEntity> replys = replyLikeRepository.findByReplySeq(replySeq);
+            List<ResponseReplyLikeRecord> likeList = new ArrayList<>();
+            replys.forEach(like -> {
+                if(!like.isDeleted()){
+                    likeList.add(new ResponseReplyLikeRecord(like));
+                }
+            });
 
-        return likeList;
+            return likeList.size();
+        }
+        catch (Exception e){
+            return 0;
+        }
     }
 
 }
