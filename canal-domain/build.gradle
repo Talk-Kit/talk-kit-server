@@ -8,6 +8,8 @@ dependencies {
     implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
     implementation 'io.github.openfeign:feign-core:11.10'
     implementation 'io.github.openfeign:feign-slf4j:11.10'  // 로깅을 위한 추가 종속성
+    /*swagger*/
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
 
     runtimeOnly 'com.mysql:mysql-connector-j'
 }

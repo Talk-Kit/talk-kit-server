@@ -6,6 +6,9 @@ dependencies {
     /*jwt 의존성 - javax.xml.bind는 최종 결과값 전달을 위해 필요함*/
     implementation 'io.jsonwebtoken:jjwt:0.9.1'
     implementation 'javax.xml.bind:jaxb-api:2.3.1'
+    /*swagger*/
+    implementation 'org.springdoc:springdoc-openapi-starter-webflux-ui:2.5.0'
+
 }
 
 ext {
