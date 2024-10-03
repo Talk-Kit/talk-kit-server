@@ -1,15 +1,11 @@
 package com.canal.client;
 
 import com.canal.dto.RequestNewProject;
-import com.canal.dto.RequestProjects;
 import com.canal.dto.RequestScript;
 import com.canal.dto.ResponseProjects;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.cloud.openfeign.FeignClient;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 @FeignClient(name="project-service", configuration = HeaderConfig.class)
 public interface ProjectServiceClient {
@@ -18,10 +14,10 @@ public interface ProjectServiceClient {
     boolean saveScript(@PathVariable("projectSeq") Long projectSeq,
                       @RequestBody RequestScript requestScript);
 
-    @GetMapping("/api/project-service/client/projects/{userId}")
-    Iterable<ResponseProjects> getAllProjectsByClient(@PathVariable("userId") String userId);
+    @GetMapping("/api/project-service/projects")
+    Iterable<ResponseProjects> getAllProjectsByClient(@RequestHeader("Authorization")String auth);
 
-    @PostMapping("/api/project-service/client/project")
-    boolean createProject(@RequestBody RequestNewProject requestNewProject);
+    @PostMapping("/api/project-service/project")
+    ResponseEntity<String> createProject(@RequestBody RequestNewProject requestNewProject, @RequestHeader("Authorization")String auth);
 
 }

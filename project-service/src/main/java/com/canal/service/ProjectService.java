@@ -9,12 +9,11 @@ import com.canal.security.JwtFilter;
 import com.canal.security.JwtUtil;
 import com.canal.domain.ProjectEntity;
 import com.canal.domain.ProjectRepository;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,18 +22,19 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDateTime;
 import java.util.*;
 
+
 @Service
 @Slf4j
 public class ProjectService {
 
     private final ProjectRepository projectRepository;
     private final FileRepository fileRepository;
-    private final JwtFilter jwtFilter;
     private final JwtUtil jwtUtil;
     private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
     private final NHNStorageClient nhnStorageClient;
     private final NHNAuthService nhnAuthService;
+    private static final int WITHOUT_BEARER = 7;
     private static final Map<String,String> contentTypeMap = new HashMap<>();
     @Value("${nhn.storage.url}")
     private String STORAGE_URL;
@@ -58,11 +58,10 @@ public class ProjectService {
         contentTypeMap.put("audio/ogg ", ".ogg");
     }
 
-    public ProjectService(ProjectRepository projectRepository, JwtFilter jwtFilter,ModelMapper modelMapper,
+    public ProjectService(ProjectRepository projectRepository,ModelMapper modelMapper,
                           JwtUtil jwtUtil, UserServiceClient userServiceClient,
                           NHNStorageClient nhnStorageClient,FileRepository fileRepository,NHNAuthService nhnAuthService){
         this.projectRepository = projectRepository;
-        this.jwtFilter = jwtFilter;
         this.jwtUtil = jwtUtil;
         this.modelMapper = modelMapper;
         this.userServiceClient = userServiceClient;
@@ -71,8 +70,8 @@ public class ProjectService {
         this.nhnAuthService = nhnAuthService;
     }
 
-    public boolean checkProjectName(String projectName,HttpServletRequest httpServletRequest){
-        Long userSeq = getUserSeq(httpServletRequest);
+    public boolean checkProjectName(String projectName,String token){
+        Long userSeq = getUserSeq(token);
         ProjectEntity projectEntity = projectRepository.findByProjectNameAndUserSeqAndDeleted(
                 projectName,userSeq,false);
 
@@ -82,10 +81,10 @@ public class ProjectService {
         return true;
     }
 
-    public boolean createProject(RequestProject requestProject, HttpServletRequest httpServletRequest){
+    public boolean createProject(RequestProject requestProject, String token){
         try{
             // userSeq 추출
-            Long userSeq = getUserSeq(httpServletRequest);
+            Long userSeq = getUserSeq(token);
             // entity 저장
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
             ProjectEntity projectEntity = modelMapper.map(requestProject, ProjectEntity.class);
@@ -137,10 +136,10 @@ public class ProjectService {
     }
 
     @Transactional
-    public String uploadFile(MultipartFile file,String nhnToken,HttpServletRequest httpServletRequest){
+    public String uploadFile(MultipartFile file,String nhnToken,String token){
         try{
             // 스토리지 저장시 userSeq별로 폴더를 생성
-            Long userSeq = getUserSeq(httpServletRequest);
+            Long userSeq = getUserSeq(token);
 
             String folder = "u"+userSeq;
             String contentType = file.getContentType();
@@ -210,11 +209,11 @@ public class ProjectService {
         }
     }
 
-    public Iterable<ResponseProjectsRecord> getAllProjectsByUserId(HttpServletRequest httpServletRequest){
+    public Iterable<ResponseProjectsRecord> getAllProjectsByUserId(String token){
         try {
             List<ResponseProjectsRecord> emptyList = new ArrayList<>();
 
-            Long userSeq = getUserSeq(httpServletRequest);
+            Long userSeq = getUserSeq(token);
 
             Iterable<ProjectEntity> entityList = projectRepository.findByUserSeqAndDeleted(userSeq,false);
             List<ResponseProjectsRecord> projectList = new ArrayList<>();
@@ -275,44 +274,14 @@ public class ProjectService {
             nhnStorageClient.deletefile(folder,objectName,nhnToken);
         });
     }
-    public Iterable<ResponseProjectsByClient> getAllProjectsByClient(String userId){
-        try{
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
-            Iterable<ProjectEntity> entityList = projectRepository.findByUserSeqAndDeleted(userSeq,false);
-            List<ResponseProjectsByClient> projectList = new ArrayList<>();
-            entityList.forEach(project-> projectList.add(new ResponseProjectsByClient(project.getProjectSeq(),project.getProjectName())));
-            return projectList;
-        }catch (Exception e){
-            log.error(e.getMessage());
-            return null;
-        }
-    }
-    @Transactional
-    public boolean createProjectByClient(String projectName, String userId){
-        try{
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
-            ProjectEntity projectEntity = projectRepository.findByProjectNameAndUserSeqAndDeleted(projectName,userSeq,false);
-            if(projectEntity != null){
-                return false;
-            }else{
-                projectEntity = new ProjectEntity();
-                projectEntity.setProjectName(projectName);
-                projectEntity.setUserSeq(userSeq);
-                projectRepository.save(projectEntity);
-                return true;
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage());
-            return false;
-        }
-    }
 
-    private Long getUserSeq(HttpServletRequest httpServletRequest){
-        String token = jwtFilter.resolveToken(httpServletRequest);
-        String userId = jwtUtil.getUserIdFromJwt(token);
+    private Long getUserSeq(String token){
+        String resolvedToken = token.substring(WITHOUT_BEARER);
+        String userId = jwtUtil.getUserIdFromJwt(resolvedToken);
         Long userSeq = userServiceClient.getUserSeqByUserId(userId);
         return userSeq;
     }
+
 
     private String setRandomFileName(String contentType){
         String extension = contentTypeMap.get(contentType);
@@ -325,11 +294,8 @@ public class ProjectService {
     private String[] getStoragePathVariables(String storageUrl){
         String target = "files/";
         int targetIndex = storageUrl.indexOf(target);
-
         String filtered = storageUrl.substring(targetIndex+target.length());
-
         String[] words = filtered.split("/");
-
         return words;
     }
 
