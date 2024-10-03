@@ -1,0 +1,29 @@
+dependencies {
+    implementation(project(":canal-domain"))
+    implementation(project(":canal-helper"))
+
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-devtools'
+    implementation 'org.springframework.boot:spring-boot-starter-actuator'
+    implementation 'org.modelmapper:modelmapper:2.3.8'
+    implementation 'jakarta.validation:jakarta.validation-api'
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+    /*swagger*/
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    developmentOnly 'org.springframework.boot:spring-boot-devtools'
+}
+
+ext {
+    set('springCloudVersion', "2023.0.3")
+}
+
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}

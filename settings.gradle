@@ -8,4 +8,5 @@ include 'api-gateway'
 include 'project-service'
 include 'community-service'
 include 'script-service'
+include 'practice-service'
 

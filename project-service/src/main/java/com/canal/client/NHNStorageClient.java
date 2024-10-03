@@ -5,6 +5,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
 @FeignClient(name="NhnStorageClient",url = "${nhn.storage.url}")
 public interface NHNStorageClient {
 
@@ -22,6 +23,7 @@ public interface NHNStorageClient {
             @PathVariable("Object")String objectName,
             @RequestHeader("X-Auth-Token") String nhnToken
     );
+
 
 }
 

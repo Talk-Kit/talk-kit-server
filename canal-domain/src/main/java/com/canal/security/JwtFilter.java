@@ -43,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
     private Authentication getAuthentication(String token) {
         String userId = jwtUtil.getUserIdFromJwt(token);
         return new UsernamePasswordAuthenticationToken(userId, null, new ArrayList<>());

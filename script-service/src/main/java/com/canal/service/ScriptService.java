@@ -2,12 +2,10 @@ package com.canal.service;
 
 import com.canal.client.OpenAIApiClient;
 import com.canal.client.ProjectServiceClient;
-import com.canal.dto.RequestContent;
-import com.canal.dto.RequestOpenAiApi;
-import com.canal.dto.RequestScript;
-import com.canal.dto.ResponseOpenAiApi;
+import com.canal.dto.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -45,6 +43,9 @@ public class ScriptService {
             log.error(e.getMessage());
             return null;
         }
+    }
+    public ResponseEntity<?> createProject(RequestNewProject requestNewProject,String auth){
+        return projectServiceClient.createProject(requestNewProject,auth);
     }
 
 }

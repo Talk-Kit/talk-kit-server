@@ -6,22 +6,16 @@ import com.canal.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.ExampleObject;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 @RestController
@@ -52,15 +46,15 @@ public class ProjectController {
     @PostMapping("/project")
     public ResponseEntity<String> createProject(
             @RequestBody RequestProject requestProject,
-            @Parameter(hidden = true) HttpServletRequest httpServletRequest) {
+            @RequestHeader("Authorization")String token) {
 
         // 중복된 프로젝트명인지 확인
-        boolean duplicatedName = projectService.checkProjectName(requestProject.getProjectName(),httpServletRequest);
+        boolean duplicatedName = projectService.checkProjectName(requestProject.getProjectName(),token);
         if (duplicatedName) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("중복된 프로젝트명");
         }
         // 프로젝트 생성
-        boolean success  = projectService.createProject(requestProject,httpServletRequest);
+        boolean success  = projectService.createProject(requestProject,token);
         if (!success){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("프로젝트 생성 실패");
         }
@@ -76,9 +70,9 @@ public class ProjectController {
     @PutMapping("/project/update/{projectSeq}")
     public ResponseEntity<String> updateProject(@PathVariable("projectSeq")Long projectSeq,
                                                 @RequestBody RequestProject requestProject,
-                                                @Parameter(hidden = true) HttpServletRequest httpServletRequest) {
+                                                @RequestHeader("Authorization")String token) {
         // 변경하려는 프로젝트명이 존재하는지 확인
-        boolean duplicatedName = projectService.checkProjectName(requestProject.getProjectName(),httpServletRequest);
+        boolean duplicatedName = projectService.checkProjectName(requestProject.getProjectName(),token);
         if (duplicatedName) {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("변경하려는 프로젝트명이 이미 존재합니다.");
         }
@@ -112,8 +106,8 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 조회실패"),
     })
     @GetMapping("/projects")
-    public ResponseEntity<?> getProjectsByUserId(@Parameter(hidden = true) HttpServletRequest httpServletRequest){
-        Iterable<ResponseProjectsRecord> responseProjectsRecord = projectService.getAllProjectsByUserId(httpServletRequest);
+    public ResponseEntity<?> getProjectsByUserId(@RequestHeader("Authorization")String token){
+        Iterable<ResponseProjectsRecord> responseProjectsRecord = projectService.getAllProjectsByUserId(token);
         if (responseProjectsRecord == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("프로젝트 조회 실패");
         }
@@ -136,7 +130,8 @@ public class ProjectController {
             @Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart("file") MultipartFile file ,
             @PathVariable("projectSeq")Long projectSeq,
-            @Parameter(hidden = true)HttpServletRequest httpServletRequest){
+            @RequestHeader("Authorization")String authorization
+    ){
 
         // nhn 토큰 발급
         String nhnToken = nhnAuthService.getNHNToken();
@@ -144,7 +139,7 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NHN 토큰 발급 실패");
         }
         // 스토리지 업로드
-        String storageUrl = projectService.uploadFile(file,nhnToken,httpServletRequest);
+        String storageUrl = projectService.uploadFile(file,nhnToken,authorization);
         if (storageUrl == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("스토리지 업로드 실패: 요청값을 확인해주세요");
         }
@@ -167,9 +162,6 @@ public class ProjectController {
         Iterable<ResponseFiles> responseFiles = projectService.getAllFilesByProject(projectSeq);
         if (responseFiles == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("projectSeq에 해당하는 프로젝트가 없습니다");
-        }
-        if (!responseFiles.iterator().hasNext()){
-            return ResponseEntity.status(HttpStatus.OK).body("생성된 파일 없음");
         }
         return ResponseEntity.status(HttpStatus.OK).body(responseFiles);
     }
@@ -202,35 +194,12 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body("삭제완료");
     }
     /*for feign client*/
-
     @Operation(hidden = true)
     @PostMapping("/client/file/{projectSeq}")
     public boolean saveScript(@PathVariable("projectSeq")Long projectSeq,
                                         @RequestBody RequestScript requestScript){
         return projectService.saveScript(projectSeq,requestScript);
     }
-    @Operation(hidden = true)
-    @PostMapping("/client/project")
-    public boolean createProjectByClient(@RequestBody RequestNewProjectByClient requsetProject){
-        return projectService.createProjectByClient(requsetProject.projectName(),requsetProject.userId());
-    }
-    @Operation(hidden = true)
-    @GetMapping("/client/projects/{userId}")
-    public Iterable<ResponseProjectsByClient> getAllProjectsByClient(@PathVariable("userId") String userId){
-        Iterable<ResponseProjectsByClient> responseList = projectService.getAllProjectsByClient(userId);
-        return responseList;
-    }
-    @Operation(hidden = true)
-    @GetMapping("/client/files/{projectSeq}")
-    public Iterable<ResponseFilesByProject> getAllFilesByProjectClient(@PathVariable("projectSeq") Long projectSeq){
-        Iterable<ResponseFilesByProject> responseList = projectService.getAllFilesByProjectClient(projectSeq);
-        return responseList;
-    }
-    @Operation(hidden = true)
-    @GetMapping("/client/file/{fileSeq}")
-    public ResponseFilesByProject getFileByFileSeq(@PathVariable("fileSeq") Long fileSeq){
-        ResponseFilesByProject response = projectService.getFileByFileSeq(fileSeq);
-        return response;
-    }
+
 
 }
