@@ -287,6 +287,27 @@ public class ProjectService {
             return null;
         }
     }
+    public Iterable<ResponseFilesByProject> getAllFilesByProjectClient(Long projectSeq){
+        try{
+            Iterable<FileEntity> entityList = fileRepository.findByProjectSeqAndDeleted(projectSeq,false);
+            List<ResponseFilesByProject> fileList = new ArrayList<>();
+            entityList.forEach(file-> fileList.add(new ResponseFilesByProject(file.getFileSeq(),file.getFileName())));
+            return fileList;
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+    public ResponseFilesByProject getFileByFileSeq(Long fileSeq){
+        try{
+            FileEntity entity = fileRepository.findByFileSeqAndDeleted(fileSeq,false);
+            ResponseFilesByProject file = new ResponseFilesByProject(entity.getFileSeq(),entity.getFileName());
+            return file;
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return null;
+        }
+    }
     @Transactional
     public boolean createProjectByClient(String projectName, String userId){
         try{

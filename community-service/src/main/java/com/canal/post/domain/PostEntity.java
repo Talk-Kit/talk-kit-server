@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 public class PostEntity extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "post_seq",updatable = false)
+    @Column(name = "post_seq", updatable = false)
     private Long postSeq;
 
     @Column(name = "post_title", nullable = false)
@@ -41,10 +41,11 @@ public class PostEntity extends BaseEntity {
     @Column(name = "user_seq", nullable = false, updatable = false)
     private Long userSeq;
 
-    public void updatePost(String postTitle, int postType, String postContent, LocalDateTime updatedAt){
+    public void updatePost(String postTitle, int postType, String postContent, String postScope, LocalDateTime updatedAt){
         this.postTitle = postTitle;
         this.postType = postType;
         this.postContent = postContent;
+        this.postScope = postScope;
         setUpdatedAt(updatedAt);
     }
 
