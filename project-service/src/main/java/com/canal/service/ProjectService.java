@@ -136,6 +136,7 @@ public class ProjectService {
         }
     }
 
+    @Transactional
     public String uploadFile(MultipartFile file,String nhnToken,HttpServletRequest httpServletRequest){
         try{
             // 스토리지 저장시 userSeq별로 폴더를 생성
