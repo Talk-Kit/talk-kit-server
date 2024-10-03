@@ -9,4 +9,6 @@ public interface PostRepository  extends JpaRepository<PostEntity, Long> {
     PostEntity findByPostSeq(Long postSeq);
     PostEntity findByPostSeqAndUserSeq(Long postSeq, Long userSeq);
     List<PostEntity> findByPostType(int postType);
+    @Override
+    PostEntity save(PostEntity post);
 }

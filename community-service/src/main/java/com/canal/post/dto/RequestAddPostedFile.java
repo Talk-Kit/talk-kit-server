@@ -8,19 +8,11 @@ import java.util.List;
 
 @NoArgsConstructor
 @Data
-public class RequestAddPost {
+public class RequestAddPostedFile {
     @NotNull
-    private String postTitle;
+    private Long postSeq;
 
     @NotNull
-    private int postType;
-
-    @NotNull
-    private String postContent;
-
-    @NotNull
-    private String postScope;
-
-    private List<Long> files;
+    private Long fileSeq;
 
 }
