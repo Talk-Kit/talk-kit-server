@@ -103,8 +103,8 @@ public class UserController {
 
 	@Operation(summary = "닉네임 존재 확인 API", description = "가입하려는 닉네임이 존재하는지 확인합니다", security = {})
 	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "CREATED: 이메일 조회 성공"),
-			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 이메일 조회 실패. 요청값 확인 필요합니다"),
+			@ApiResponse(responseCode = "201", description = "CREATED: 닉네임 조회 성공"),
+			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 닉네임 조회 실패. 요청값 확인 필요합니다"),
 			@ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
 			@ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
