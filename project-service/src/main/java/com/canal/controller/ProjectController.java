@@ -51,7 +51,6 @@ public class ProjectController {
     })
     @PostMapping("/project")
     public ResponseEntity<String> createProject(
-            @Schema(description = "프로젝트명")
             @RequestBody RequestProject requestProject,
             @Parameter(hidden = true) HttpServletRequest httpServletRequest) {
 
@@ -105,7 +104,8 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body("프로젝트 삭제 성공");
     }
 
-    @Operation(summary = "프로젝트 조회 API", description = "사용자별 프로젝트 목록을 조회합니다")
+    @Operation(summary = "프로젝트 조회 API",
+            description = "사용자별 프로젝트 목록을 조회합니다. Authorization 헤더의 jwt 토큰으로 조회합니다.")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "OK: 조회 성공"),
             @ApiResponse(responseCode = "202 ", description = "ACCEPTED: 조회 성공이지만 생성된 프로젝트 없음"),
