@@ -1,8 +1,7 @@
 package com.canal.post.controller;
 
-import com.canal.post.dto.RequestAddPost;
-import com.canal.post.dto.RequestChangePost;
-import com.canal.post.dto.ResponsePostRecord;
+import com.canal.client.ProjectServiceClient;
+import com.canal.post.dto.*;
 import com.canal.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +22,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final ProjectServiceClient projectServiceClient;
 
     @Operation(summary = "새 게시글 작성 API", description = "사용자가 작성한 게시글을 저장합니다")
     @ApiResponses({
@@ -109,6 +109,61 @@ public class PostController {
         List<ResponsePostRecord> resultList = postService.getKeywordPost(keyword);
 
         return ResponseEntity.status(HttpStatus.OK).body(resultList);
+    }
+
+    @Operation(summary = "프로젝트 조회 API", description = "파일을 불러올 프로젝트를 불러옵니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK: 프로젝트 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 프로젝트 조회 실패. userId 확인 필요"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
+    @GetMapping("/projects/{userId}")
+    public ResponseEntity<?> getAllProjectsByClient(@PathVariable("userId") String userId) {
+        Iterable<ResponseProjects> response = projectServiceClient.getAllProjectsByClient(userId);
+        if (response == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else if (!response.iterator().hasNext()) {
+            return ResponseEntity.status(HttpStatus.OK).body("생성된 프로젝트 없음");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(summary = "파일 조회 API", description = "선택한 프로젝트에 있는 파일을 불러옵니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK: 파일 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 파일 조회 실패. projectSeq 확인 필요"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
+    @GetMapping("/files/{projectSeq}")
+    public ResponseEntity<?> getAllFilesByProjectClient(@PathVariable("projectSeq") Long projectSeq) {
+        Iterable<ResponseFilesByProject> response = projectServiceClient.getAllFilesByProjectClient(projectSeq);
+        if (response == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        } else if (!response.iterator().hasNext()) {
+            return ResponseEntity.status(HttpStatus.OK).body("생성된 파일 없음");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+
+    @Operation(summary = "단일 파일 조회 API", description = "선택된 하나의 파일을 불러옵니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "OK: 파일 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 파일 조회 실패. fileSeq 확인 필요"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
+    @GetMapping("/file/{fileSeq}")
+    public ResponseEntity<?> getFileByFileSeq(@PathVariable("fileSeq") Long fileSeq) {
+        ResponseFilesByProject response = projectServiceClient.getFileByFileSeq(fileSeq);
+        if (response == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("생성된 파일 없음");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(response);
     }
 
 }

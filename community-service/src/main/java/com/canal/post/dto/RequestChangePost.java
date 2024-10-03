@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @NoArgsConstructor
 @Data
 public class RequestChangePost {
@@ -18,5 +20,7 @@ public class RequestChangePost {
 
     @NotNull
     private String postScope;
+
+    private List<Long> files;
 
 }

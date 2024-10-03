@@ -96,7 +96,7 @@ public class ReplyReportController {
         return ResponseEntity.status(HttpStatus.OK).body(resultList);
     }
 
-    @Operation(summary = "댓글, 대댓글 신고 내역 삭제 API", description = "삭제되지 않은 댓글, 대댓글 신고 내역을 삭제 합니다")
+    @Operation(summary = "댓글, 대댓글 신고 내역 조회 API", description = "게시글 별 삭제되지 않은 댓글, 대댓글 신고 내역을 조회합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "CREATED: 댓글, 대댓글 신고 내역 삭제 성공"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 댓글, 대댓글 신고 내역 삭제 실패. 요청값 확인 필요합니다"),
