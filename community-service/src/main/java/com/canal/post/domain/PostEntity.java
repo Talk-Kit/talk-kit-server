@@ -32,7 +32,7 @@ public class PostEntity extends BaseEntity {
     @ColumnDefault("0")
     private int postLikeNum;
 
-    @Column(name = "post_content", nullable = false)
+    @Column(name = "post_content", nullable = false, columnDefinition = "LONGTEXT")
     private String postContent;
 
     @Column(name = "post_scope", nullable = false)
