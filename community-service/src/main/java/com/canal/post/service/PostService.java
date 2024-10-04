@@ -1,28 +1,29 @@
 package com.canal.post.service;
 
+import com.canal.client.NHNStorageClient;
 import com.canal.client.UserServiceClient;
+import com.canal.post.domain.ImgFileEntity;
 import com.canal.post.domain.PostEntity;
 import com.canal.post.domain.PostedFileEntity;
 import com.canal.post.dto.RequestAddPost;
 import com.canal.post.dto.RequestAddPostedFile;
-import com.canal.post.dto.RequestChangePost;
 import com.canal.post.dto.ResponsePostRecord;
+import com.canal.post.repository.ImgFileRepository;
 import com.canal.post.repository.PostRepository;
 import com.canal.post.repository.PostedFileRepository;
-import com.canal.security.JwtFilter;
-import com.canal.security.JwtUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -30,14 +31,24 @@ import java.util.List;
 public class PostService {
     private final PostRepository postRepository;
     private final PostedFileRepository postedFileRepository;
-    private final JwtFilter jwtFilter;
-    private final JwtUtil jwtUtil;
     private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
+    private static final Map<String,String> contentTypeMap = new HashMap<>();
+    private final NHNStorageClient nhnStorageClient;
+    private final NHNAuthService nhnAuthService;
+    @Value("${nhn.storage.url}")
+    private String STORAGE_URL;
+    private final ImgFileRepository imgFileRepository;
+
+    static {
+        // 이미지
+        contentTypeMap.put("image/jpeg", ".jpeg");
+        contentTypeMap.put("image/png", ".png");
+    }
 
     // 게시글 작성
     @Transactional
-    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, String auth){
+    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, MultipartFile[] file, String auth){
         try{
             // userSeq 요청
             Long userSeq = userServiceClient.getUserSeq(auth);
@@ -48,72 +59,95 @@ public class PostService {
             PostEntity savedPost = postRepository.save(postEntity);
 
             // 게시된 파일 저장
-            requestAddPost.getFiles().forEach(file -> {
+            requestAddPost.getFiles().forEach(pfile -> {
                 RequestAddPostedFile requestAddPostedFile = new RequestAddPostedFile();
                 requestAddPostedFile.setPostSeq(savedPost.getPostSeq());
-                requestAddPostedFile.setFileSeq(file);
+                requestAddPostedFile.setFileSeq(pfile);
                 PostedFileEntity postedFileEntity = modelMapper.map(requestAddPostedFile, PostedFileEntity.class);
                 postedFileRepository.save(postedFileEntity);
             });
-            return ResponseEntity.status(HttpStatus.OK).body("게시물 생성 성공");
+
+            // 업로드 할 이미지 파일이 없는 경우
+            if(file.length == 0){
+                return ResponseEntity.status(HttpStatus.CREATED).body("게시물 생성 성공");
+            }
+            // nhn 토큰 발급
+            String nhnToken = nhnAuthService.getNHNToken();
+            if (nhnToken == null){ // 발급 실패시
+                postRepository.deleteByPostSeq(savedPost.getPostSeq());
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NHN 토큰 발급 실패");
+            }
+            for (MultipartFile fileSave : file){
+                // 스토리지 업로드
+                String storageUrl = uploadFile(fileSave, nhnToken, savedPost.getPostSeq());
+                if (storageUrl == null){
+                    postRepository.deleteByPostSeq(savedPost.getPostSeq());
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("스토리지 업로드 실패: 요청값을 확인해주세요");
+                }
+                // 디비 저장
+                boolean success = saveFiles(storageUrl, savedPost.getPostSeq(), fileSave.getOriginalFilename());
+                if (!success){
+                    postRepository.deleteByPostSeq(savedPost.getPostSeq());
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("디비 저장 실패: 요청값을 확인해주세요");
+                }
+            }
+            return ResponseEntity.status(HttpStatus.CREATED).body("게시물 생성, 파일 저장 성공");
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 생성 실패");
         }
     }
 
-    // 게시글 수정
-    public ResponseEntity<?> updatePost(RequestChangePost requestChangePost, Long postSeq, String auth){
+    @Transactional
+    public String uploadFile(MultipartFile file, String nhnToken, Long postSeq){
         try{
-            // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeq(auth);
-            // userSeq 값 일치 여부 확인
-            PostEntity postEntity = postRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
-            if(postEntity != null){
-                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+            // 스토리지 저장시 postSeq 폴더를 생성
 
-                PostEntity changePostEntity = modelMapper.map(requestChangePost, PostEntity.class);
-                postEntity.updatePost(changePostEntity.getPostTitle(), changePostEntity.getPostType(),
-                        changePostEntity.getPostContent(), changePostEntity.getPostScope(), LocalDateTime.now());
-
-                // 게시된 파일 저장
-                requestChangePost.getFiles().forEach(file -> {
-                    PostedFileEntity existPostedFileEntity = postedFileRepository.findByFileSeqAndPostSeq(file, postSeq);
-                    if(existPostedFileEntity == null){
-                        PostedFileEntity postedFileEntity = new PostedFileEntity();
-                        postedFileEntity.setPostSeq(postSeq);
-                        postedFileEntity.setFileSeq(file);
-                        postedFileRepository.save(postedFileEntity);
-                    }
-                });
-
-                // 삭제된 파일 제거
-                List<PostedFileEntity> postedFileEntityList = postedFileRepository.findByPostSeqAndDeleted(postSeq, false);
-                postedFileEntityList.forEach(files -> {
-                    boolean deleted = true;
-                    for(int i=0; i<requestChangePost.getFiles().size(); i++){
-                        if(files.getFileSeq().equals(requestChangePost.getFiles().get(i))){
-                            deleted = false;
-                            break;
-                        }
-                    }
-                    if(deleted){
-                        files.deletePostedFile();
-                        postedFileRepository.save(files);
-                    }
-                });
-
-                return ResponseEntity.status(HttpStatus.OK).body("게시물 수정 성공");
+            String folder = "p"+postSeq;
+            String contentType = file.getContentType();
+            String objectName = setRandomFileName(contentType);
+            byte[] bytes = file.getBytes();
+            ResponseEntity<Void> response = nhnStorageClient.uploadfile(
+                    folder,
+                    objectName,
+                    nhnToken,
+                    contentType,
+                    bytes
+            );
+            if (response.getStatusCode().value() != 201){
+                return null;
             }
-            else{
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 수정 실패");
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 수정 실패");
+            return STORAGE_URL+"/"+folder+"/"+objectName; // 스토리지 저장 성공시 url 반환
+
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return null;
+        }
+    }
+
+    private String setRandomFileName(String contentType){
+        String extension = contentTypeMap.get(contentType);
+        if (extension == null){
+            extension = ".bin";
+        }
+        return UUID.randomUUID().toString() + extension;
+    }
+
+    @Transactional
+    public boolean saveFiles(String storageUrl, Long postSeq, String fileName){
+        try{
+            ImgFileEntity imgFileEntity = new ImgFileEntity();
+            imgFileEntity.setFileUrl(storageUrl);
+            imgFileEntity.setPostSeq(postSeq);
+            imgFileRepository.save(imgFileEntity);
+            return true;
+        } catch (Exception e) {
+            log.error(e.getMessage());
+            return false;
         }
     }
 
     // 게시글 삭제
-    public ResponseEntity<?> delete(Long postSeq,String auth){
+    public ResponseEntity<?> delete(Long postSeq, String auth){
         try{
             // userSeq 요청
             Long userSeq = userServiceClient.getUserSeq(auth);
@@ -131,6 +165,8 @@ public class PostService {
                     postedFileRepository.save(files);
                 });
 
+                deleteFile(postSeq);
+
                 return ResponseEntity.status(HttpStatus.OK).body("게시물 삭제 성공");
             }
             else{
@@ -138,6 +174,23 @@ public class PostService {
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 삭제 실패");
+        }
+    }
+
+    // 파일 삭제
+    @Transactional
+    public boolean deleteFile(Long postSeq){
+        try{
+            List<ImgFileEntity> imgFileEntity = imgFileRepository.findByPostSeqAndDeleted(postSeq,false);
+            imgFileEntity.forEach(files -> {
+                files.setDeleted(true);
+                imgFileRepository.save(files);
+            });
+
+            return true;
+        }catch (Exception e){
+            log.error(e.getMessage());
+            return false;
         }
     }
 

@@ -2,15 +2,21 @@ package com.canal.post.controller;
 
 import com.canal.client.ProjectServiceClient;
 import com.canal.post.dto.*;
+import com.canal.post.service.NHNAuthService;
 import com.canal.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -22,6 +28,7 @@ public class PostController {
 
     private final PostService postService;
     private final ProjectServiceClient projectServiceClient;
+    private final NHNAuthService nhnAuthService;
 
     @Operation(summary = "새 게시글 작성 API", description = "사용자가 작성한 게시글을 저장합니다")
     @ApiResponses({
@@ -31,25 +38,13 @@ public class PostController {
             @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
-    @PostMapping("/new")
-    public ResponseEntity<?> addPost(@RequestBody RequestAddPost requestAddPost,
-                                     @RequestHeader("Authorization")String auth) {
-        return postService.createPost(requestAddPost,auth);
-    }
-
-    @Operation(summary = "게시글 수정 API", description = "사용자가 작성한 게시글을 수정합니다")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "CREATED: 게시글 수정 성공"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 게시글 수정 실패. 요청값 확인 필요합니다"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
-    })
-    @PutMapping("/update/{postSeq}")
-    public ResponseEntity<?> updatePost(@RequestBody RequestChangePost requestChangePost,
-                                        @PathVariable Long postSeq,
-                                        @RequestHeader("Authorization")String auth) {
-        return postService.updatePost(requestChangePost, postSeq, auth);
+    @PostMapping(value = "/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> addPost(
+            @Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
+            @RequestPart(value="file", required = false) MultipartFile[] file,
+            @Valid @RequestPart(value="requestAddPost") RequestAddPost requestAddPost,
+            @RequestHeader("Authorization") String auth) {
+        return postService.createPost(requestAddPost, file, auth);
     }
 
     @Operation(summary = "게시글 삭제 API", description = "사용자가 작성한 게시글을 삭제합니다")
