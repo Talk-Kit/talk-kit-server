@@ -33,8 +33,8 @@ public class PostLikeController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new/{postSeq}")
-    public ResponseEntity<?> addPostLike(@PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        return postLikeService.createPostLike(postSeq, httpServletRequest);
+    public ResponseEntity<?> addPostLike(@PathVariable Long postSeq, @RequestHeader("Authorization") String auth) {
+        return postLikeService.createPostLike(postSeq, auth);
     }
 
     @Operation(summary = "게시글 좋아요 취소 API", description = "게시글에 좋아요를 취소합니다")
@@ -46,8 +46,8 @@ public class PostLikeController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{likeSeq}")
-    public ResponseEntity<?> deletePostLike(@PathVariable Long likeSeq, HttpServletRequest httpServletRequest) {
-        return postLikeService.deletePostLike(likeSeq, httpServletRequest);
+    public ResponseEntity<?> deletePostLike(@PathVariable Long likeSeq, @RequestHeader("Authorization") String auth) {
+        return postLikeService.deletePostLike(likeSeq, auth);
     }
 
     @Operation(summary = "게시글 별 좋아요 갯수 조회 API", description = "게시글 별 삭제되지 않은 좋아요 갯수를 조회 합니다")

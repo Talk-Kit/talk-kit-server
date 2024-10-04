@@ -33,8 +33,9 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new")
-    public ResponseEntity<?> addPost(@RequestBody RequestAddPost requestAddPost, HttpServletRequest httpServletRequest) {
-        return postService.createPost(requestAddPost,httpServletRequest);
+    public ResponseEntity<?> addPost(@RequestBody RequestAddPost requestAddPost,
+                                     @RequestHeader("Authorization")String auth) {
+        return postService.createPost(requestAddPost,auth);
     }
 
     @Operation(summary = "게시글 수정 API", description = "사용자가 작성한 게시글을 수정합니다")
@@ -46,8 +47,10 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PutMapping("/update/{postSeq}")
-    public ResponseEntity<?> updatePost(@RequestBody RequestChangePost requestChangePost, @PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        return postService.updatePost(requestChangePost, postSeq, httpServletRequest);
+    public ResponseEntity<?> updatePost(@RequestBody RequestChangePost requestChangePost,
+                                        @PathVariable Long postSeq,
+                                        @RequestHeader("Authorization")String auth) {
+        return postService.updatePost(requestChangePost, postSeq, auth);
     }
 
     @Operation(summary = "게시글 삭제 API", description = "사용자가 작성한 게시글을 삭제합니다")
@@ -59,8 +62,8 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{postSeq}")
-    public ResponseEntity<?> deletePost(@PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        return postService.delete(postSeq, httpServletRequest);
+    public ResponseEntity<?> deletePost(@PathVariable Long postSeq, @RequestHeader("Authorization")String auth) {
+        return postService.delete(postSeq, auth);
     }
 
     @Operation(summary = "게시판 유형 별 게시글 조회 API", description = "게시글 유형 별로 삭제되지 않은 게시글을 조회합니다")
@@ -119,9 +122,9 @@ public class PostController {
             @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
-    @GetMapping("/projects/{userId}")
-    public ResponseEntity<?> getAllProjectsByClient(@PathVariable("userId") String userId) {
-        Iterable<ResponseProjects> response = projectServiceClient.getAllProjectsByClient(userId);
+    @GetMapping("/projects")
+    public ResponseEntity<?> getAllProjectsByClient(@RequestHeader("Authorization")String auth) {
+        Iterable<ResponseProjects> response = projectServiceClient.getAllProjects(auth);
         if (response == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else if (!response.iterator().hasNext()) {
@@ -140,7 +143,7 @@ public class PostController {
     })
     @GetMapping("/files/{projectSeq}")
     public ResponseEntity<?> getAllFilesByProjectClient(@PathVariable("projectSeq") Long projectSeq) {
-        Iterable<ResponseFilesByProject> response = projectServiceClient.getAllFilesByProjectClient(projectSeq);
+        Iterable<ResponseFilesByProject> response = projectServiceClient.getAllFilesByProject(projectSeq);
         if (response == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         } else if (!response.iterator().hasNext()) {

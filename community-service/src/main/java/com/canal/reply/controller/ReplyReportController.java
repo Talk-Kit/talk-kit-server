@@ -34,8 +34,10 @@ public class ReplyReportController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new/{replySeq}")
-    public ResponseEntity<?> addReplyReport(@RequestBody RequestAddReplyReport requestAddReplyReport, @PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
-        boolean success = replyReportService.createReplyReport(requestAddReplyReport, replySeq, httpServletRequest);
+    public ResponseEntity<?> addReplyReport(@RequestBody RequestAddReplyReport requestAddReplyReport,
+                                            @PathVariable Long replySeq,
+                                            @RequestHeader("Authorization")String auth) {
+        boolean success = replyReportService.createReplyReport(requestAddReplyReport, replySeq, auth);
         if (success){
             return ResponseEntity.status(HttpStatus.OK).body("댓글, 대댓글 신고 성공");
         }else{
@@ -52,8 +54,10 @@ public class ReplyReportController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PutMapping("/update/{reportSeq}")
-    public ResponseEntity<?> updateReplyReport(@RequestBody RequestChangeReplyReport requestChangeReplyReport, @PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
-        boolean success = replyReportService.updateReplyReport(requestChangeReplyReport, reportSeq, httpServletRequest);
+    public ResponseEntity<?> updateReplyReport(@RequestBody RequestChangeReplyReport requestChangeReplyReport,
+                                               @PathVariable Long reportSeq,
+                                               @RequestHeader("Authorization")String auth) {
+        boolean success = replyReportService.updateReplyReport(requestChangeReplyReport, reportSeq, auth);
         if (success){
             return ResponseEntity.status(HttpStatus.OK).body("댓글, 대댓글 신고 수정 성공");
         }else{
@@ -70,8 +74,8 @@ public class ReplyReportController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{reportSeq}")
-    public String deleteReplyReport(@PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
-        ReplyReportEntity deletedReplyEntity = replyReportService.deleteReplyReport(reportSeq, httpServletRequest);
+    public String deleteReplyReport(@PathVariable Long reportSeq, @RequestHeader("Authorization")String auth) {
+        ReplyReportEntity deletedReplyEntity = replyReportService.deleteReplyReport(reportSeq, auth);
         if(deletedReplyEntity == null) {
             return "댓글, 대댓글 신고 삭제 실패";
         }

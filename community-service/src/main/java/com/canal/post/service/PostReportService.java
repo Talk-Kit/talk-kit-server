@@ -35,13 +35,10 @@ public class PostReportService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 신고 작성
-    public ResponseEntity<?> createPostReport(RequestAddPostReport requestAddPostReport, Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPostReport(RequestAddPostReport requestAddPostReport, Long postSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 신고 존재 여부 확인
             PostReportEntity postReport = postReportRepository.findByReportSeqAndReportUserSeq(postSeq, userSeq);
             if(postReport == null || postReport.isDeleted()){
@@ -64,13 +61,10 @@ public class PostReportService {
     }
 
     // 게시글 신고 수정
-    public ResponseEntity<?> updatePostReport(RequestChangePostReport requestChangePostReport, Long reportSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> updatePostReport(RequestChangePostReport requestChangePostReport,Long reportSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 신고 존재 여부 확인
             PostReportEntity postReportEntity = postReportRepository.findByReportSeqAndReportUserSeq(reportSeq, userSeq);
             if(postReportEntity != null || !postReportEntity.isDeleted()){
@@ -91,13 +85,10 @@ public class PostReportService {
     }
 
     // 게시글 신고 삭제
-    public ResponseEntity<?> deletePostReport(Long reportSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> deletePostReport(Long reportSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 신고 존재 여부 확인
             PostReportEntity postReportEntity = postReportRepository.findByReportSeqAndReportUserSeq(reportSeq, userSeq);
             if(postReportEntity != null || !postReportEntity.isDeleted()){

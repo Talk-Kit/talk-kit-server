@@ -34,13 +34,10 @@ public class ReplyLikeService {
     private final UserServiceClient userServiceClient;
 
     // 댓글 좋아요
-    public boolean createReplyLike(@PathVariable Long replySeq, HttpServletRequest httpServletRequest){
+    public boolean createReplyLike( Long replySeq,String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
 
             // 댓글인지 대댓글인지 확인(댓글만 좋아요 가능)
             ReplyEntity replyEntity = replyRepository.findByReplySeq(replySeq);
@@ -73,13 +70,10 @@ public class ReplyLikeService {
     }
 
     // 댓글 좋아요 취소
-    public ReplyLikeEntity deleteReplyLike(Long likeSeq, HttpServletRequest httpServletRequest){
+    public ReplyLikeEntity deleteReplyLike(Long likeSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 좋아요 존재 여부 확인
             ReplyLikeEntity replyLikeEntity = replyLikeRepository.findByLikeSeqAndUserSeq(likeSeq, userSeq);
             if(replyLikeEntity != null && !replyLikeEntity.isDeleted()){

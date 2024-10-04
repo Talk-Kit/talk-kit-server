@@ -13,7 +13,7 @@ public interface ProjectServiceClient {
 
     // 프로젝트 불러올때
     @GetMapping("/api/project-service/projects")
-    Iterable<ResponseProjects> getAllProjectsByClient(@RequestHeader("Authorization")String auth);
+    Iterable<ResponseProjects> getAllProjects(@RequestHeader("Authorization")String auth);
 
     // 파일 불러올때
     @GetMapping("/api/project-service/files/{projectSeq}")

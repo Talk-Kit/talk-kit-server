@@ -33,13 +33,10 @@ public class ReplyService {
     private final UserServiceClient userServiceClient;
 
     // 댓글 작성
-    public boolean createReply(RequestAddReply requestAddReply, Long postSeq, HttpServletRequest httpServletRequest){
+    public boolean createReply(RequestAddReply requestAddReply, Long postSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
 
             PostEntity postEntity = postRepository.findByPostSeq(postSeq);
 
@@ -76,13 +73,10 @@ public class ReplyService {
     }
 
     // 대댓글 작성
-    public boolean createReReply(RequestAddReply requestAddReply, Long postSeq, Long replySeq, HttpServletRequest httpServletRequest){
+    public boolean createReReply(RequestAddReply requestAddReply, Long postSeq, Long replySeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
 
             PostEntity postEntity = postRepository.findByPostSeq(postSeq);
             if(!postEntity.isDeleted()) {
@@ -118,13 +112,10 @@ public class ReplyService {
     }
 
     // 댓글, 대댓글 수정
-    public boolean updateReply(RequestChangeReply requestChangeReply, Long replySeq, HttpServletRequest httpServletRequest){
+    public boolean updateReply(RequestChangeReply requestChangeReply, Long replySeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // userSeq 값 일치 여부 확인
             ReplyEntity replyEntity = replyRepository.findByReplySeqAndUserSeq(replySeq, userSeq);
             if(replyEntity != null  || !replyEntity.isDeleted()){
@@ -148,13 +139,10 @@ public class ReplyService {
     }
 
     // 댓글, 대댓글 삭제
-    public boolean deleteReply(Long replySeq, HttpServletRequest httpServletRequest){
+    public boolean deleteReply(Long replySeq,String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // userSeq 값 일치 여부 확인
             ReplyEntity replyEntity = replyRepository.findByReplySeqAndUserSeq(replySeq, userSeq);
             if(replyEntity != null && !replyEntity.isDeleted()){

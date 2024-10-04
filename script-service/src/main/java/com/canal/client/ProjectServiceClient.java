@@ -18,6 +18,7 @@ public interface ProjectServiceClient {
     Iterable<ResponseProjects> getAllProjectsByClient(@RequestHeader("Authorization")String auth);
 
     @PostMapping("/api/project-service/project")
-    ResponseEntity<String> createProject(@RequestBody RequestNewProject requestNewProject, @RequestHeader("Authorization")String auth);
+    ResponseEntity<String> createProject(@RequestBody RequestNewProject requestNewProject,
+                                         @RequestHeader("Authorization")String auth);
 
 }

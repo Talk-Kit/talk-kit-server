@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -20,7 +21,7 @@ import java.util.List;
 @RequestMapping("/api/user-service")
 @Slf4j
 @RequiredArgsConstructor
-@Tag(name = "User Controller",description = "회원가입, 로그인, 로그아웃을 위한 컨트롤러입니다")
+@Tag(name = "User Controller",description = "사용자 관련 전반적인 기능을 위한 컨트롤러입니다")
 public class UserController {
 
 	private final UserService userService;
@@ -51,10 +52,7 @@ public class UserController {
 
 	@Operation(summary = "이메일 존재 확인 API", description = "가입하려는 이메일이 존재하는지 확인합니다", security = {})
 	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "CREATED: 이메일 조회 성공"),
-			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 이메일 조회 실패. 요청값 확인 필요합니다"),
-			@ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
-			@ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+			@ApiResponse(responseCode = "200", description = "OK: 이메일 조회 성공"),
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
 	@PostMapping("/emailCheck")
@@ -77,7 +75,7 @@ public class UserController {
 
 	@Operation(summary = "이메일 인증 번호 확인 API", description = "사용자가 입력한 이메일로 발송된 인증 번호를 확인합니다", security = {})
 	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "CREATED: 인증 번호 확인 성공"),
+			@ApiResponse(responseCode = "200", description = "OK: 인증 번호 확인 성공"),
 			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 인증 번호 확인 실패. 요청값 확인 필요합니다"),
 			@ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
 			@ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
@@ -103,7 +101,7 @@ public class UserController {
 
 	@Operation(summary = "닉네임 존재 확인 API", description = "가입하려는 닉네임이 존재하는지 확인합니다", security = {})
 	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "CREATED: 닉네임 조회 성공"),
+			@ApiResponse(responseCode = "200", description = "OK: 닉네임 조회 성공"),
 			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 닉네임 조회 실패. 요청값 확인 필요합니다"),
 			@ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
 			@ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
@@ -158,25 +156,19 @@ public class UserController {
 			@ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
-	@GetMapping("/users/{userSeq}")
-	public ResponseEntity<ResponseUsersRecord> getUser(@PathVariable("userSeq") Long userSeq) {
+	@GetMapping("/user")
+	public ResponseEntity<ResponseUsersRecord> getUser(HttpServletRequest request) {
 
-		ResponseUsersRecord responseUsersRecord = userService.getUserByUserSeq(userSeq);
+		ResponseUsersRecord responseUsersRecord = userService.getUserByJwt(request);
 
 		return ResponseEntity.status(HttpStatus.OK).body(responseUsersRecord);
 	}
 
-	@Operation(summary = "회원 Seq 조회 API", description = "사용자의 아이디로 사용자의 userSeq 정보를 조회합니다")
-	@ApiResponses({
-			@ApiResponse(responseCode = "201", description = "CREATED: userSeq 조회 성공"),
-			@ApiResponse(responseCode = "400", description = "BAD REQUEST: userSeq 조회 실패. 요청값 확인 필요합니다"),
-			@ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
-			@ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
-			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
-	})
-	@GetMapping("/client/project/{userId}")
-	public ResponseEntity<Long> getUserSeqByUserId(@PathVariable("userId") String userId){
-		Long userSeq = userService.getUserSeqByUserId(userId);
+	/*feign client*/
+	@Operation(hidden = true)
+	@GetMapping("/client/user")
+	public ResponseEntity<Long> getUserSeq(@RequestHeader("Authorization") String auth){
+		Long userSeq = userService.getUserSeq(auth);
 		return ResponseEntity.status(HttpStatus.OK).body(userSeq);
 	}
 

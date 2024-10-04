@@ -35,13 +35,10 @@ public class PostLikeService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 좋아요
-    public ResponseEntity<?> createPostLike(Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPostLike(Long postSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 좋아요 존재 여부 확인
             PostLikeEntity postLikeEntity = postLikeRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
             if(postLikeEntity == null || postLikeEntity.isDeleted()){
@@ -66,13 +63,10 @@ public class PostLikeService {
     }
 
     // 게시글 좋아요 취소
-    public ResponseEntity<?> deletePostLike(Long likeSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> deletePostLike(Long likeSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 좋아요 존재 여부 확인
             PostLikeEntity postLikeEntity = postLikeRepository.findByLikeSeqAndUserSeq(likeSeq, userSeq);
             if(postLikeEntity != null && !postLikeEntity.isDeleted()){

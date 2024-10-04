@@ -32,8 +32,8 @@ public class ReplyLikeController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new/{replySeq}")
-    public ResponseEntity<?> addReplyLike(@PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
-        boolean success = replyLikeService.createReplyLike(replySeq, httpServletRequest);
+    public ResponseEntity<?> addReplyLike(@PathVariable Long replySeq, @RequestHeader("Authorizaiton")String auth) {
+        boolean success = replyLikeService.createReplyLike(replySeq, auth);
         if (success){
             return ResponseEntity.status(HttpStatus.OK).body("댓글 좋아요 성공");
         }else{
@@ -50,8 +50,8 @@ public class ReplyLikeController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{likeSeq}")
-    public String deleteReplyLike(@PathVariable Long likeSeq, HttpServletRequest httpServletRequest) {
-        ReplyLikeEntity deletedPostLikeEntity = replyLikeService.deleteReplyLike(likeSeq, httpServletRequest);
+    public String deleteReplyLike(@PathVariable Long likeSeq,@RequestHeader("Authorizaiton")String auth) {
+        ReplyLikeEntity deletedPostLikeEntity = replyLikeService.deleteReplyLike(likeSeq, auth);
         if(deletedPostLikeEntity == null) {
             return "댓글 좋아요 취소 실패";
         }

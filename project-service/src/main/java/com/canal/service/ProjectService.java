@@ -276,9 +276,7 @@ public class ProjectService {
     }
 
     private Long getUserSeq(String token){
-        String resolvedToken = token.substring(WITHOUT_BEARER);
-        String userId = jwtUtil.getUserIdFromJwt(resolvedToken);
-        Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+        Long userSeq = userServiceClient.getUserSeq(token);
         return userSeq;
     }
 

@@ -17,25 +17,13 @@ public class FeignConfig { // feign client 요청시 Authorization token 가로�
             ServletRequestAttributes attri = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
             if(attri != null){
                 HttpServletRequest request = attri.getRequest();
-                // userSeq를 찾기 위한 user-service로의 요청만 Authorization Header를 가로챔
-                if (requestTemplate.feignTarget().name().equals("user-service")){
-                    String authorization = request.getHeader("Authorization");
-                    if(authorization != null && authorization.startsWith("Bearer ")){
-                        requestTemplate.header("Authorization", authorization);
-                    }else {
-                        log.error("Authorization header is missing or invalid.");
-                    }
+                String authorization = request.getHeader("Authorization");
+                if(authorization != null && authorization.startsWith("Bearer ")){
+                    requestTemplate.header("Authorization", authorization);
+                }else {
+                    log.error("Authorization header is missing or invalid.");
                 }
 
-                // project-service feign client 통신시 헤더 설정
-                if (requestTemplate.feignTarget().name().equals("project-service")){
-                    String authorization = request.getHeader("Authorization");
-                    if(authorization != null && authorization.startsWith("Bearer ")){
-                        requestTemplate.header("Authorization", authorization);
-                    }else {
-                        log.error("Authorization header is missing or invalid.");
-                    }
-                }
             }
         };
     }

@@ -3,8 +3,10 @@ package com.canal.service;
 import com.canal.domain.UserEntity;
 import com.canal.domain.UserRepository;
 import com.canal.dto.*;
+import com.canal.security.JwtFilter;
 import com.canal.security.JwtUtil;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -33,6 +35,8 @@ public class UserService  {
     private final JavaMailSender javaMailSender;  // 의존성 주입을 통해 필요한 객체를 가져옴
     private final RedisService redisService;
 
+    private static final int  AUTORIZATION_START_INDEX  = 7;
+    private final JwtFilter jwtFilter;
     @Value("${spring.mail.username}")
     private String senderEmail;
 
@@ -64,19 +68,14 @@ public class UserService  {
         }
     }
 
-    public ResponseUsersRecord getUserByUserSeq(Long userSeq) {
-        UserEntity userEntity = userRepository.findByUserSeq(userSeq);
-        if (userEntity == null) {
-            throw new IllegalArgumentException("User not found");
-        }
-        return new ResponseUsersRecord(userEntity);
-    }
-    public Long getUserSeqByUserId(String userId) {
+    public ResponseUsersRecord getUserByJwt(HttpServletRequest request) {
+        String token = jwtFilter.resolveToken(request);
+        String userId = jwtUtil.getUserIdFromJwt(token);
         UserEntity userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
             throw new IllegalArgumentException("User not found");
         }
-        return userEntity.getUserSeq();
+        return new ResponseUsersRecord(userEntity);
     }
 
     public List<ResponseUsersRecord> getAllUsers() {
@@ -230,6 +229,16 @@ public class UserService  {
         catch (Exception e){
             return null;
         }
+    }
+    //for feign client
+    public Long getUserSeq(String auth) {
+        String resolvedAuth = auth.substring(AUTORIZATION_START_INDEX);
+        String userId = jwtUtil.getUserIdFromJwt(resolvedAuth);
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if (userEntity == null) {
+            throw new IllegalArgumentException("User not found");
+        }
+        return userEntity.getUserSeq();
     }
 
 }
