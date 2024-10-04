@@ -3,23 +3,18 @@ package com.canal.post.service;
 import com.canal.client.UserServiceClient;
 import com.canal.post.domain.PostEntity;
 import com.canal.post.domain.PostLikeEntity;
-import com.canal.post.dto.RequestAddPostLike;
 import com.canal.post.dto.ResponsePostLikeRecord;
 import com.canal.post.repository.PostLikeRepository;
 import com.canal.post.repository.PostRepository;
 import com.canal.security.JwtFilter;
 import com.canal.security.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
