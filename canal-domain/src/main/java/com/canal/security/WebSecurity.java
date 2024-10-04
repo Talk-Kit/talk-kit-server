@@ -38,6 +38,7 @@ public class WebSecurity {
                         .requestMatchers(new AntPathRequestMatcher("/api/project-service/v3/api-docs/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/script-service/v3/api-docs")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community-service/v3/api-docs/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/api/practice-service/v3/api-docs/**")).permitAll()
                                 .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
