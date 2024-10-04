@@ -11,4 +11,5 @@ public interface PostRepository  extends JpaRepository<PostEntity, Long> {
     List<PostEntity> findByPostType(int postType);
     @Override
     PostEntity save(PostEntity post);
+    PostEntity deleteByPostSeq(Long postSeq);
 }
