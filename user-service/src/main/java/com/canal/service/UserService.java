@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -89,50 +91,61 @@ public class UserService  {
     }
 
     // 이메일 존재 여부 확인
-    public boolean existUserEmail(RequestMailCheck requestMailCheck) {
+    public ResponseEntity<?> existUserEmail(RequestMailCheck requestMailCheck) {
         try{
+            if(requestMailCheck.getUserEmail() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+            }
             UserEntity user = userRepository.findByUserEmail(requestMailCheck.getUserEmail());
             if(user == null || user.isDeleted()){
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("이메일 없음");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.OK).body("이메일 존재");
             }
         }
         catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     // 아이디 존재 여부 확인
-    public boolean existUserId(RequestUserIdCheck requestUserIdCheck) {
+    public ResponseEntity<?> existUserId(RequestUserIdCheck requestUserIdCheck) {
         try{
+            if(requestUserIdCheck.getUserId() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+            }
+
             UserEntity user = userRepository.findByUserId(requestUserIdCheck.getUserId());
             if(user == null || user.isDeleted()){
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("아이디 없음");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.OK).body("아이디 존재");
             }
         }
         catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     // 닉네임 존재 여부 확인
-    public boolean existUserNickname(RequestUserNicknameCheck requestUserNicknameCheck) {
+    public ResponseEntity<?> existUserNickname(RequestUserNicknameCheck requestUserNicknameCheck) {
         try {
+            if(requestUserNicknameCheck.getUserNickname() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+            }
+
             UserEntity user = userRepository.findByUserNickname(requestUserNicknameCheck.getUserNickname());
             if(user == null || user.isDeleted()){
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("닉네임 없음");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.OK).body("닉네임 존재");
             }
         }
         catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
@@ -181,8 +194,14 @@ public class UserService  {
     }
 
     // 실제 메일 전송
-    public boolean sendEmail(RequestMailCheck requestMailCheck) {
+    public ResponseEntity<?> sendEmail(RequestMailCheck requestMailCheck) {
         try {
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+            UserEntity userEntity = modelMapper.map(requestMailCheck, UserEntity.class);
+            if(userEntity.getUserEmail() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+            }
+
             if (redisService.existData(requestMailCheck.getUserEmail())) {
                 redisService.deleteData(requestMailCheck.getUserEmail());
             }
@@ -192,30 +211,36 @@ public class UserService  {
             // 실제 메일 전송
             javaMailSender.send(message);
 
-            return true;
+            return ResponseEntity.status(HttpStatus.OK).body("인증 번호 발송 성공");
         } catch (Exception e) {
-            return false;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 
     // 메일 인증 코드 확인
-    public Boolean verifyEmailCode(RequestMailCodeCheck requestMailCodeCheck) {
+    public ResponseEntity<?> verifyEmailCode(RequestMailCodeCheck requestMailCodeCheck) {
         try{
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+            UserEntity userEntity = modelMapper.map(requestMailCodeCheck, UserEntity.class);
+            if(userEntity.getUserEmail() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+            }
+
             String codeFoundByEmail = redisService.getData(requestMailCodeCheck.getUserEmail());
             if (codeFoundByEmail == null) {
-                return false;
+                return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 실패");
             }
 
             if(codeFoundByEmail.equals(requestMailCodeCheck.getAuthCode())){
                 makeMemberId(requestMailCodeCheck.getUserEmail());
-                return true;
+                return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 성공");
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 실패");
             }
         }
         catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 

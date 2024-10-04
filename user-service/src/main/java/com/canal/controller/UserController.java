@@ -56,8 +56,8 @@ public class UserController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
 	@PostMapping("/emailCheck")
-	public String existUserEmail(@RequestBody RequestMailCheck requestMailCheck) {
-		return userService.existUserEmail(requestMailCheck) ? "이메일 없음" : "이메일 존재";
+	public ResponseEntity<?> existUserEmail(@RequestBody RequestMailCheck requestMailCheck) {
+		return userService.existUserEmail(requestMailCheck);
 	}
 
 	@Operation(summary = "이메일 인증 API", description = "이메일 인증을 위한 인증 번호를 발송합니다", security = {})
@@ -69,8 +69,8 @@ public class UserController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
 	@PostMapping("/emailConfirm")
-	public String sendEmail(@RequestBody RequestMailCheck requestMailCheck) {
-		return userService.sendEmail(requestMailCheck) ? "인증 번호 발송 성공" : "인증 번호 발송 실패";
+	public ResponseEntity<?> sendEmail(@RequestBody RequestMailCheck requestMailCheck) {
+		return userService.sendEmail(requestMailCheck);
 	}
 
 	@Operation(summary = "이메일 인증 번호 확인 API", description = "사용자가 입력한 이메일로 발송된 인증 번호를 확인합니다", security = {})
@@ -82,8 +82,8 @@ public class UserController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
 	@PostMapping("/emailCodeConfirm")
-	public String sendEmailPath(@RequestBody RequestMailCodeCheck requestMailCodeCheck) {
-		return userService.verifyEmailCode(requestMailCodeCheck) ? "인증 번호 인증 성공" : "인증 번호 인증 실패";
+	public ResponseEntity<?> sendEmailPath(@RequestBody RequestMailCodeCheck requestMailCodeCheck) {
+		return userService.verifyEmailCode(requestMailCodeCheck);
 	}
 
 	@Operation(summary = "아이디 존재 확인 API", description = "가입하려는 아이디가 존재하는지 확인합니다", security = {})
@@ -95,8 +95,8 @@ public class UserController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
 	@PostMapping("/userIdCheck")
-	public String existUserId(@RequestBody RequestUserIdCheck requestUserIdCheck) {
-		return userService.existUserId(requestUserIdCheck) ? "아이디 없음" : "아이디 존재";
+	public ResponseEntity<?> existUserId(@RequestBody RequestUserIdCheck requestUserIdCheck) {
+		return userService.existUserId(requestUserIdCheck);
 	}
 
 	@Operation(summary = "닉네임 존재 확인 API", description = "가입하려는 닉네임이 존재하는지 확인합니다", security = {})
@@ -108,8 +108,8 @@ public class UserController {
 			@ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
 	})
 	@PostMapping("/userNicknameCheck")
-	public String existUserNickname(@RequestBody RequestUserNicknameCheck requestUserNicknameCheck) {
-		return userService.existUserNickname(requestUserNicknameCheck) ? "닉네임 없음" : "닉네임 존재";
+	public ResponseEntity<?> existUserNickname(@RequestBody RequestUserNicknameCheck requestUserNicknameCheck) {
+		return userService.existUserNickname(requestUserNicknameCheck);
 	}
 
 	@Operation(summary = "회원가입 API", description = "사용자의 정보를 등록합니다", security = {})
