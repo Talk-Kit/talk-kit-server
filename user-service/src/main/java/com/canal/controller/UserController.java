@@ -35,7 +35,6 @@ public class UserController {
 	})
 	@PostMapping("/login")
 	public ResponseEntity<?> login(@RequestBody RequestLoginRecord requestLoginRecord) {
-
 		try {
 			String token = userService.authenticateAndGenerateToken(requestLoginRecord);
 
@@ -73,7 +72,7 @@ public class UserController {
 		return userService.verifyEmailCode(requestMailCodeCheck);
 	}
 
-	@Operation(summary = "아이디 존재 확인 API", description = "가입하려는 아이디가 존재하는지 확인합니다", security = {})
+	@Operation(summary = "아이디 중복 확인 API", description = "가입하려는 아이디가 존재하는지 확인합니다", security = {})
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "OK: 사용가능한 아이디"),
 			@ApiResponse(responseCode = "409", description = "CONFLICT: 중복되는 아이디 존재"),
@@ -85,7 +84,7 @@ public class UserController {
 		return userService.existUserId(requestUserIdCheck);
 	}
 
-	@Operation(summary = "닉네임 존재 확인 API", description = "가입하려는 닉네임이 존재하는지 확인합니다", security = {})
+	@Operation(summary = "닉네임 중복 확인 API", description = "가입하려는 닉네임이 존재하는지 확인합니다", security = {})
 	@ApiResponses({
 			@ApiResponse(responseCode = "200", description = "OK: 가입 가능한 닉네임"),
 			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 요청값 확인 필요합니다"),
@@ -110,7 +109,7 @@ public class UserController {
 		return userService.createUser(requestJoin);
 	}
 
-	@Operation(summary = "회원 조회 API", description = "등록된 모든 회원들의 정보를 조회합니다")
+	@Operation(summary = "모든 회원 조회 API", description = "등록된 모든 회원들의 정보를 조회합니다")
 	@ApiResponses({
 			@ApiResponse(responseCode = "201", description = "CREATED: 회원 정보 조회 성공"),
 			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 회원 정보 조회 실패. 요청값 확인 필요합니다"),
