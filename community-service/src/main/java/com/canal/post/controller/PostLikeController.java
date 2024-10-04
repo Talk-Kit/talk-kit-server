@@ -1,16 +1,11 @@
 package com.canal.post.controller;
 
-import com.canal.post.domain.PostLikeEntity;
-import com.canal.post.dto.RequestAddPostLike;
-import com.canal.post.dto.ResponsePostLikeRecord;
 import com.canal.post.service.PostLikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

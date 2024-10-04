@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -93,13 +92,13 @@ public class ReplyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{replySeq}")
-    public String deletePost(@PathVariable Long replySeq, @RequestHeader("Authorization")String auth) {
+    public ResponseEntity<?> deletePost(@PathVariable Long replySeq, @RequestHeader("Authorization")String auth) {
         boolean success = replyService.deleteReply(replySeq, auth);
         if(success) {
-            return "댓글, 대댓글 삭제 성공";
+            return ResponseEntity.status(HttpStatus.OK).body("댓글, 대댓글 삭제 성공");
         }
         else{
-            return "댓글, 대댓글 삭제 실패";
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("댓글, 대댓글 삭제 실패");
         }
     }
 

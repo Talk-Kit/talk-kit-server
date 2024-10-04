@@ -1,13 +1,11 @@
 package com.canal.reply.controller;
 
 import com.canal.reply.domain.ReplyLikeEntity;
-import com.canal.reply.dto.ResponseReplyLikeRecord;
 import com.canal.reply.service.ReplyLikeService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,13 +48,13 @@ public class ReplyLikeController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{likeSeq}")
-    public String deleteReplyLike(@PathVariable Long likeSeq,@RequestHeader("Authorizaiton")String auth) {
+    public ResponseEntity<?> deleteReplyLike(@PathVariable Long likeSeq,@RequestHeader("Authorizaiton")String auth) {
         ReplyLikeEntity deletedPostLikeEntity = replyLikeService.deleteReplyLike(likeSeq, auth);
         if(deletedPostLikeEntity == null) {
-            return "댓글 좋아요 취소 실패";
+            return ResponseEntity.status(HttpStatus.OK).body("댓글 좋아요 취소 실패");
         }
         else{
-            return "댓글 좋아요 취소 성공";
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("댓글 좋아요 취소 성공");
         }
     }
 

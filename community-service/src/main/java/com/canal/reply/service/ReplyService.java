@@ -10,7 +10,6 @@ import com.canal.reply.dto.ResponseReplyRecord;
 import com.canal.reply.repository.ReplyRepository;
 import com.canal.security.JwtFilter;
 import com.canal.security.JwtUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
