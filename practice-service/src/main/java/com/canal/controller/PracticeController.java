@@ -37,7 +37,7 @@ public class PracticeController {
     })
     @GetMapping("/projects")
     public ResponseEntity<?> getAllProjects(@RequestHeader("Authorization")String authorization) {
-        Iterable<ResponseProjects> response = projectServiceClient.getAllProjectsByClient(authorization);
+        Iterable<ResponseProjects> response = projectServiceClient.getAllProjects(authorization);
         if (response == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("프로젝트 조회 실패");
         } else if (!response.iterator().hasNext()) {

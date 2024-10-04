@@ -40,13 +40,10 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // entity 저장
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
             PostEntity postEntity = modelMapper.map(requestAddPost, PostEntity.class);
@@ -68,13 +65,10 @@ public class PostService {
     }
 
     // 게시글 수정
-    public ResponseEntity<?> updatePost(RequestChangePost requestChangePost, Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> updatePost(RequestChangePost requestChangePost, Long postSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // userSeq 값 일치 여부 확인
             PostEntity postEntity = postRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
             if(postEntity != null){
@@ -122,13 +116,10 @@ public class PostService {
     }
 
     // 게시글 삭제
-    public ResponseEntity<?> delete(Long postSeq, HttpServletRequest httpServletRequest){
+    public ResponseEntity<?> delete(Long postSeq,String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // userSeq 값 일치 여부 확인
             PostEntity postEntity = postRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
             if(postEntity != null && !postEntity.isDeleted()){

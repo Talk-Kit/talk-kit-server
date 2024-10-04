@@ -33,8 +33,9 @@ public class ReplyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new/{postSeq}")
-    public ResponseEntity<?> addReply(@RequestBody RequestAddReply requestAddReply, @PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        boolean success  = replyService.createReply(requestAddReply, postSeq, httpServletRequest);
+    public ResponseEntity<?> addReply(@RequestBody RequestAddReply requestAddReply, @PathVariable Long postSeq,
+                                      @RequestHeader("Authorization")String auth) {
+        boolean success  = replyService.createReply(requestAddReply, postSeq, auth);
         if (success){
             return ResponseEntity.status(HttpStatus.OK).body("댓글 작성 성공");
         }else{
@@ -51,8 +52,11 @@ public class ReplyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new/{postSeq}/{replySeq}")
-    public ResponseEntity<?> addReReply(@RequestBody RequestAddReply requestAddReply, @PathVariable Long postSeq, @PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
-        boolean success = replyService.createReReply(requestAddReply, postSeq, replySeq, httpServletRequest);
+    public ResponseEntity<?> addReReply(@RequestBody RequestAddReply requestAddReply,
+                                        @PathVariable Long postSeq,
+                                        @PathVariable Long replySeq,
+                                        @RequestHeader("Authorization")String auth) {
+        boolean success = replyService.createReReply(requestAddReply, postSeq, replySeq, auth);
         if (success) {
             return ResponseEntity.status(HttpStatus.OK).body("대댓글 작성 성공");
         } else {
@@ -69,8 +73,10 @@ public class ReplyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PutMapping("/update/{replySeq}")
-    public ResponseEntity<?> updateReply(@RequestBody RequestChangeReply requestChangeReply, @PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
-        boolean success  = replyService.updateReply(requestChangeReply, replySeq, httpServletRequest);
+    public ResponseEntity<?> updateReply(@RequestBody RequestChangeReply requestChangeReply,
+                                         @PathVariable Long replySeq,
+                                         @RequestHeader("Authorization")String auth) {
+        boolean success  = replyService.updateReply(requestChangeReply, replySeq, auth);
         if (success){
             return ResponseEntity.status(HttpStatus.OK).body("댓글, 대댓글 수정 성공");
         }else{
@@ -87,8 +93,8 @@ public class ReplyController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{replySeq}")
-    public String deletePost(@PathVariable Long replySeq, HttpServletRequest httpServletRequest) {
-        boolean success = replyService.deleteReply(replySeq, httpServletRequest);
+    public String deletePost(@PathVariable Long replySeq, @RequestHeader("Authorization")String auth) {
+        boolean success = replyService.deleteReply(replySeq, auth);
         if(success) {
             return "댓글, 대댓글 삭제 성공";
         }

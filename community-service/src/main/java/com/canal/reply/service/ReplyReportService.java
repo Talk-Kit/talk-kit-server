@@ -33,13 +33,10 @@ public class ReplyReportService {
     private final UserServiceClient userServiceClient;
 
     // 댓글, 대댓글 신고 작성
-    public boolean createReplyReport(RequestAddReplyReport requestAddReplyReport, Long replySeq, HttpServletRequest httpServletRequest){
+    public boolean createReplyReport(RequestAddReplyReport requestAddReplyReport, Long replySeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 신고 존재 여부 확인
             ReplyReportEntity replyReport = replyReportRepository.findByReportSeqAndReportUserSeq(replySeq, userSeq);
             if(replyReport == null || replyReport.isDeleted()){
@@ -64,13 +61,10 @@ public class ReplyReportService {
     }
 
     // 댓글, 대댓글 신고 수정
-    public boolean updateReplyReport(RequestChangeReplyReport requestChangeReplyReport, Long reportSeq, HttpServletRequest httpServletRequest){
+    public boolean updateReplyReport(RequestChangeReplyReport requestChangeReplyReport, Long reportSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 신고 존재 여부 확인
             ReplyReportEntity replyReportEntity = replyReportRepository.findByReportSeqAndReportUserSeq(reportSeq, userSeq);
             if(replyReportEntity != null && !replyReportEntity.isDeleted()){
@@ -92,13 +86,10 @@ public class ReplyReportService {
     }
 
     // 댓글, 대댓글 신고 삭제
-    public ReplyReportEntity deleteReplyReport(Long reportSeq, HttpServletRequest httpServletRequest){
+    public ReplyReportEntity deleteReplyReport(Long reportSeq, String auth){
         try{
-            //userId 추출
-            String token = jwtFilter.resolveToken(httpServletRequest);
-            String userId = jwtUtil.getUserIdFromJwt(token);
             // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeqByUserId(userId);
+            Long userSeq = userServiceClient.getUserSeq(auth);
             // 신고 존재 여부 확인
             ReplyReportEntity replyReportEntity = replyReportRepository.findByReportSeqAndReportUserSeq(reportSeq, userSeq);
             if(replyReportEntity != null && !replyReportEntity.isDeleted()){

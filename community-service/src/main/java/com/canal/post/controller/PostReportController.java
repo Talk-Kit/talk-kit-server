@@ -34,8 +34,11 @@ public class PostReportController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PostMapping("/new/{postSeq}")
-    public ResponseEntity<?> addPostReport(@RequestBody RequestAddPostReport requestAddPostReport, @PathVariable Long postSeq, HttpServletRequest httpServletRequest) {
-        return postReportService.createPostReport(requestAddPostReport, postSeq, httpServletRequest);
+    public ResponseEntity<?> addPostReport(
+            @RequestBody RequestAddPostReport requestAddPostReport,
+            @PathVariable Long postSeq,
+            @RequestHeader("Authorization")String auth) {
+        return postReportService.createPostReport(requestAddPostReport, postSeq, auth);
     }
 
     @Operation(summary = "게시글 신고 내용 수정 API", description = "게시글 신고 내용을 수정 합니다")
@@ -47,8 +50,11 @@ public class PostReportController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @PutMapping("/update/{reportSeq}")
-    public ResponseEntity<?> updatePostReport(@RequestBody RequestChangePostReport requestChangePostReport, @PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
-        return postReportService.updatePostReport(requestChangePostReport, reportSeq, httpServletRequest);
+    public ResponseEntity<?> updatePostReport(
+            @RequestBody RequestChangePostReport requestChangePostReport,
+            @PathVariable Long reportSeq,
+            @RequestHeader("Authorization")String auth) {
+        return postReportService.updatePostReport(requestChangePostReport, reportSeq, auth);
     }
 
     @Operation(summary = "게시글 신고 내역 삭제 API", description = "게시글 신고 내역을 삭제 합니다")
@@ -60,8 +66,8 @@ public class PostReportController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @DeleteMapping("/delete/{reportSeq}")
-    public ResponseEntity<?> deletePostReport(@PathVariable Long reportSeq, HttpServletRequest httpServletRequest) {
-        return postReportService.deletePostReport(reportSeq, httpServletRequest);
+    public ResponseEntity<?> deletePostReport(@PathVariable Long reportSeq, @RequestHeader("Authorization")String auth) {
+        return postReportService.deletePostReport(reportSeq, auth);
     }
 
     @Operation(summary = "게시글 신고 내역 조회 API", description = "삭제되지 않은 모든 게시글 신고 내역을 조회 합니다")
