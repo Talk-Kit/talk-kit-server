@@ -25,11 +25,11 @@ public class RequestJoin {
     private String userAffiliation;
 
     @NotNull
-    private boolean talkKit;
+    private boolean termsOfAgreement;
 
     @NotNull
-    private boolean personalInformation;
+    private boolean personalInfoAgreement;
 
     @NotNull
-    private boolean marketing;
+    private boolean marketingAgreement;
 }

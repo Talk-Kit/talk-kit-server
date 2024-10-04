@@ -35,13 +35,13 @@ public class UserEntity extends BaseEntity {
     @Column(name= "user_deleted",nullable = false)
     private boolean deleted = Boolean.FALSE;
 
-    @Column(name= "talk_kit",nullable = false)
-    private boolean talkKit = Boolean.FALSE;
+    @Column(name= "terms_of_agreement",nullable = false)
+    private boolean termsOfAgreement = Boolean.FALSE;
 
-    @Column(name= "personal_information",nullable = false)
-    private boolean personalInformation = Boolean.FALSE;
+    @Column(name= "personal_info_agreement",nullable = false)
+    private boolean personalInfoAgreement = Boolean.FALSE;
 
-    @Column(name= "marketing",nullable = false)
-    private boolean marketing = Boolean.FALSE;
+    @Column(name= "marketing_agreement",nullable = false)
+    private boolean marketingAgreement = Boolean.FALSE;
 
 }
