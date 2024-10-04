@@ -54,30 +54,34 @@ public class UserService  {
         return jwtUtil.generateToken(requestLoginRecord.userId());
     }
 
-    public boolean createUser(RequestJoin requestJoin) {
-
+    public ResponseEntity<String> createUser(RequestJoin requestJoin) {
         try{
+            if (!requestJoin.isMarketingAgreement() || !requestJoin.isTermsOfAgreement()) {
+                return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("이용약관과 개인정보수집 동의는 필수입니다.");
+            }
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-
             UserEntity userEntity = modelMapper.map(requestJoin, UserEntity.class);
+            if (userEntity == null) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값 확인 필요");
+            }
             userEntity.setUserPwd(pwdEncoder.encode(requestJoin.getUserPwd()));
-
+            userEntity.setDeleted(false);
             userRepository.save(userEntity);
-            return true;
+            return ResponseEntity.status(HttpStatus.CREATED).body(userEntity.getUserNickname());
         }catch (Exception e){
             log.error(e.getMessage());
-            return false;
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("회원가입 실패");
         }
     }
 
-    public ResponseUsersRecord getUserByJwt(HttpServletRequest request) {
+    public ResponseEntity<?>  getUserByJwt(HttpServletRequest request) {
         String token = jwtFilter.resolveToken(request);
         String userId = jwtUtil.getUserIdFromJwt(token);
         UserEntity userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
-            throw new IllegalArgumentException("User not found");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return new ResponseUsersRecord(userEntity);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseUsersRecord(userEntity));
     }
 
     public List<ResponseUsersRecord> getAllUsers() {
@@ -90,42 +94,24 @@ public class UserService  {
         return userList;
     }
 
-    // 이메일 존재 여부 확인
-    public ResponseEntity<?> existUserEmail(RequestMailCheck requestMailCheck) {
-        try{
-            if(requestMailCheck.getUserEmail() == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
-            }
-            UserEntity user = userRepository.findByUserEmail(requestMailCheck.getUserEmail());
-            if(user == null || user.isDeleted()){
-                return ResponseEntity.status(HttpStatus.OK).body("이메일 없음");
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.OK).body("이메일 존재");
-            }
-        }
-        catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
-    }
 
     // 아이디 존재 여부 확인
     public ResponseEntity<?> existUserId(RequestUserIdCheck requestUserIdCheck) {
         try{
             if(requestUserIdCheck.getUserId() == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값이 없습니다");
             }
 
             UserEntity user = userRepository.findByUserId(requestUserIdCheck.getUserId());
             if(user == null || user.isDeleted()){
-                return ResponseEntity.status(HttpStatus.OK).body("아이디 없음");
+                return ResponseEntity.status(HttpStatus.OK).body("사용가능한 아이디");
             }
             else{
-                return ResponseEntity.status(HttpStatus.OK).body("아이디 존재");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("아이디 존재");
             }
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -133,19 +119,19 @@ public class UserService  {
     public ResponseEntity<?> existUserNickname(RequestUserNicknameCheck requestUserNicknameCheck) {
         try {
             if(requestUserNicknameCheck.getUserNickname() == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값이 없습니다");
             }
 
             UserEntity user = userRepository.findByUserNickname(requestUserNicknameCheck.getUserNickname());
             if(user == null || user.isDeleted()){
-                return ResponseEntity.status(HttpStatus.OK).body("닉네임 없음");
+                return ResponseEntity.status(HttpStatus.OK).body("사용가능한 닉네임");
             }
             else{
-                return ResponseEntity.status(HttpStatus.OK).body("닉네임 존재");
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("닉네임 존재");
             }
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
@@ -196,10 +182,13 @@ public class UserService  {
     // 실제 메일 전송
     public ResponseEntity<?> sendEmail(RequestMailCheck requestMailCheck) {
         try {
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            UserEntity userEntity = modelMapper.map(requestMailCheck, UserEntity.class);
-            if(userEntity.getUserEmail() == null){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
+            // 존재하는 이메일인지 확인
+            if(requestMailCheck.getUserEmail() == null){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("요청값이 없습니다");
+            }
+            UserEntity user = userRepository.findByUserEmailAndDeleted(requestMailCheck.getUserEmail(),false);
+            if(user != null){
+                return ResponseEntity.status(HttpStatus.CONFLICT).body("존재하는 이메일");
             }
 
             if (redisService.existData(requestMailCheck.getUserEmail())) {
@@ -213,22 +202,20 @@ public class UserService  {
 
             return ResponseEntity.status(HttpStatus.OK).body("인증 번호 발송 성공");
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
     // 메일 인증 코드 확인
     public ResponseEntity<?> verifyEmailCode(RequestMailCodeCheck requestMailCodeCheck) {
         try{
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            UserEntity userEntity = modelMapper.map(requestMailCodeCheck, UserEntity.class);
-            if(userEntity.getUserEmail() == null){
+            if(requestMailCodeCheck.getUserEmail() == null){
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("잘못된 값 전달");
             }
 
             String codeFoundByEmail = redisService.getData(requestMailCodeCheck.getUserEmail());
             if (codeFoundByEmail == null) {
-                return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 실패");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("이메일 인증 실패");
             }
 
             if(codeFoundByEmail.equals(requestMailCodeCheck.getAuthCode())){
@@ -236,11 +223,11 @@ public class UserService  {
                 return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 성공");
             }
             else{
-                return ResponseEntity.status(HttpStatus.OK).body("이메일 인증 실패");
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("이메일 인증 실패");
             }
         }
         catch (Exception e){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
         }
     }
 
