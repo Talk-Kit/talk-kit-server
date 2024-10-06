@@ -56,7 +56,7 @@ public class UserService  {
 
     public ResponseEntity<String> createUser(RequestJoin requestJoin) {
         try{
-            if (!requestJoin.isMarketingAgreement() || !requestJoin.isTermsOfAgreement()) {
+            if (!requestJoin.isPersonalInfoAgreement() || !requestJoin.isTermsOfAgreement()) {
                 return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body("이용약관과 개인정보수집 동의는 필수입니다.");
             }
             modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
