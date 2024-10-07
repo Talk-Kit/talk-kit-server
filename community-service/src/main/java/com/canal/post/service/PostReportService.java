@@ -8,8 +8,6 @@ import com.canal.post.dto.RequestChangePostReport;
 import com.canal.post.dto.ResponsePostReportRecord;
 import com.canal.post.repository.PostReportRepository;
 import com.canal.post.repository.PostRepository;
-import com.canal.security.JwtFilter;
-import com.canal.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -27,8 +25,6 @@ import java.util.List;
 public class PostReportService {
     private final PostReportRepository postReportRepository;
     private final PostRepository postRepository;
-    private final JwtFilter jwtFilter;
-    private final JwtUtil jwtUtil;
     private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
 

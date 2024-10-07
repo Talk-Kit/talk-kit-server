@@ -6,11 +6,8 @@ import com.canal.reply.domain.ReplyLikeEntity;
 import com.canal.reply.dto.ResponseReplyLikeRecord;
 import com.canal.reply.repository.ReplyLikeRepository;
 import com.canal.reply.repository.ReplyRepository;
-import com.canal.security.JwtFilter;
-import com.canal.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,9 +21,6 @@ public class ReplyLikeService {
     private final ReplyLikeRepository replyLikeRepository;
     private final ReplyRepository replyRepository;
     private final ReplyRepository postRepository;
-    private final JwtFilter jwtFilter;
-    private final JwtUtil jwtUtil;
-    private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
 
     // 댓글 좋아요
