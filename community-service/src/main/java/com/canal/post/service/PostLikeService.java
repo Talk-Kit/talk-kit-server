@@ -6,11 +6,8 @@ import com.canal.post.domain.PostLikeEntity;
 import com.canal.post.dto.ResponsePostLikeRecord;
 import com.canal.post.repository.PostLikeRepository;
 import com.canal.post.repository.PostRepository;
-import com.canal.security.JwtFilter;
-import com.canal.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -24,9 +21,6 @@ import java.util.List;
 public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
-    private final JwtFilter jwtFilter;
-    private final JwtUtil jwtUtil;
-    private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
 
     // 게시글 좋아요
@@ -37,6 +31,7 @@ public class PostLikeService {
             // 좋아요 존재 여부 확인
             PostLikeEntity postLikeEntity = postLikeRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
             if(postLikeEntity == null || postLikeEntity.isDeleted()){
+                postLikeEntity = new PostLikeEntity();
                 // entity 저장
                 postLikeEntity.setUserSeq(userSeq);
                 postLikeEntity.setPostSeq(postSeq);
@@ -50,10 +45,10 @@ public class PostLikeService {
                 return ResponseEntity.status(HttpStatus.OK).body("게시물 좋아요 성공");
             }
             else{
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 실패");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 좋아요 존재");
             }
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 실패");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 좋아요 실패");
         }
     }
 
