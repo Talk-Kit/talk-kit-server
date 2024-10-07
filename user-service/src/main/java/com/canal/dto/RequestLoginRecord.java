@@ -3,6 +3,7 @@ package com.canal.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+
 @Schema(description = "로그인 요청 DTO")
 public record RequestLoginRecord(
         @Schema(description = "사용자 ID")
