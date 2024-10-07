@@ -8,8 +8,6 @@ import com.canal.reply.dto.RequestAddReply;
 import com.canal.reply.dto.RequestChangeReply;
 import com.canal.reply.dto.ResponseReplyRecord;
 import com.canal.reply.repository.ReplyRepository;
-import com.canal.security.JwtFilter;
-import com.canal.security.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -26,8 +24,6 @@ import java.util.List;
 public class ReplyService {
     private final ReplyRepository replyRepository;
     private final PostRepository postRepository;
-    private final JwtFilter jwtFilter;
-    private final JwtUtil jwtUtil;
     private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
 
