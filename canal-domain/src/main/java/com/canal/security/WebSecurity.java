@@ -31,7 +31,6 @@ public class WebSecurity {
     protected SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
-                .cors(customizer -> customizer.configurationSource(configurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.POST,"/api/user-service/login").permitAll()
@@ -57,22 +56,5 @@ public class WebSecurity {
     public AuthenticationManager authManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
-
-    @Bean
-    public CorsConfigurationSource configurationSource(){
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        configuration.addAllowedHeader("*");
-        configuration.addAllowedOriginPattern("*");
-        configuration.setAllowCredentials(false);
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-
-        source.registerCorsConfiguration("/**", configuration);
-
-        return source;
-
-    }
-
 
 }
