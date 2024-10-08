@@ -2,6 +2,7 @@ dependencies {
     implementation(project(":canal-helper"))
     implementation 'jakarta.validation:jakarta.validation-api'
     implementation 'jakarta.servlet:jakarta.servlet-api:5.0.0'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
     implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
