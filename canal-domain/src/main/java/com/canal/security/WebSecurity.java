@@ -64,6 +64,7 @@ public class WebSecurity {
         configuration.addAllowedOrigin("http://localhost:3000"); // 허용할 출처
         configuration.addAllowedMethod("*"); // 모든 HTTP 메소드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
+        configuration.addExposedHeader("Authorization");
         configuration.setAllowCredentials(true); // 자격 증명 허용
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

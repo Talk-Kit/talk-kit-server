@@ -42,7 +42,7 @@ public class UserController {
 
 			return ResponseEntity.ok().headers(headers).body("로그인 성공");
 		} catch (Exception e) {
-			return ResponseEntity.status(401).body("로그인 실패: 인증 실패");
+			return ResponseEntity.status(400).body("로그인 실패");
 		}
 
 	}
