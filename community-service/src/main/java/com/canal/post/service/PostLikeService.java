@@ -24,12 +24,13 @@ public class PostLikeService {
     private final UserServiceClient userServiceClient;
 
     // 게시글 좋아요
-    public ResponseEntity<?> createPostLike(Long postSeq, String auth){
+    public ResponseEntity<Boolean> likePost(Long postSeq, String auth){
         try{
             // userSeq 요청
             Long userSeq = userServiceClient.getUserSeq(auth);
             // 좋아요 존재 여부 확인
             PostLikeEntity postLikeEntity = postLikeRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
+            // 좋아요 생성
             if(postLikeEntity == null || postLikeEntity.isDeleted()){
                 postLikeEntity = new PostLikeEntity();
                 // entity 저장
@@ -42,39 +43,22 @@ public class PostLikeService {
                 postEntity.setPostLikeNum(postEntity.getPostLikeNum()+1);
                 postRepository.save(postEntity);
 
-                return ResponseEntity.status(HttpStatus.OK).body("게시물 좋아요 성공");
+                return ResponseEntity.status(HttpStatus.OK).body(true);
             }
+            // 좋아요 취소
             else{
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 좋아요 존재");
-            }
-        }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("게시물 좋아요 실패");
-        }
-    }
-
-    // 게시글 좋아요 취소
-    public ResponseEntity<?> deletePostLike(Long likeSeq, String auth){
-        try{
-            // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeq(auth);
-            // 좋아요 존재 여부 확인
-            PostLikeEntity postLikeEntity = postLikeRepository.findByLikeSeqAndUserSeq(likeSeq, userSeq);
-            if(postLikeEntity != null && !postLikeEntity.isDeleted()){
                 postLikeEntity.deletePostLike();
                 postLikeRepository.save(postLikeEntity);
 
                 // post 테이블 post_like_num update
-                PostEntity postEntity =  postRepository.findByPostSeq(postLikeEntity.getPostSeq());
+                PostEntity postEntity =  postRepository.findByPostSeq(postSeq);
                 postEntity.setPostLikeNum(postEntity.getPostLikeNum()-1);
                 postRepository.save(postEntity);
 
-                return ResponseEntity.status(HttpStatus.OK).body("게시물 좋아요 취소 성공");
-            }
-            else{
-                return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 취소 실패");
+                return ResponseEntity.status(HttpStatus.OK).body(false);
             }
         }catch (Exception e){
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 좋아요 취소 실패");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
         }
     }
 
