@@ -8,6 +8,8 @@ import com.canal.reply.repository.ReplyLikeRepository;
 import com.canal.reply.repository.ReplyRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -24,7 +26,7 @@ public class ReplyLikeService {
     private final UserServiceClient userServiceClient;
 
     // 댓글 좋아요
-    public boolean createReplyLike( Long replySeq,String auth){
+    public ResponseEntity<Boolean> likeReply(Long replySeq, String auth){
         try{
             // userSeq 요청
             Long userSeq = userServiceClient.getUserSeq(auth);
@@ -45,17 +47,17 @@ public class ReplyLikeService {
                     reply.setReplyLikeNum(reply.getReplyLikeNum()+1);
                     postRepository.save(reply);
 
-                    return true;
+                    return ResponseEntity.status(HttpStatus.OK).body(true);
                 }
                 else{
-                    return false;
+                    return ResponseEntity.status(HttpStatus.OK).body(false);
                 }
             }
             else{
-                return false;
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
             }
         }catch (Exception e){
-            return false;
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
         }
     }
 

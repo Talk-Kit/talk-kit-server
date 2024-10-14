@@ -19,7 +19,7 @@ public class ReplyLikeController {
 
     private final ReplyLikeService replyLikeService;
 
-    @Operation(summary = "댓글 좋아요 API", description = "댓글에 좋아요를 합니다")
+    @Operation(summary = "댓글 좋아요 API", description = "댓글에 좋아요, 좋아요 취소를 합니다")
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "CREATED: 댓글 좋아요 성공"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 댓글 좋아요 실패. 요청값 확인 필요합니다"),
@@ -27,33 +27,9 @@ public class ReplyLikeController {
             @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
-    @PostMapping("/new/{replySeq}")
-    public ResponseEntity<?> addReplyLike(@PathVariable Long replySeq, @RequestHeader("Authorizaiton")String auth) {
-        boolean success = replyLikeService.createReplyLike(replySeq, auth);
-        if (success){
-            return ResponseEntity.status(HttpStatus.OK).body("댓글 좋아요 성공");
-        }else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("댓글 좋아요 실패");
-        }
-    }
-
-    @Operation(summary = "댓글 좋아요 취소 API", description = "댓글에 좋아요를 취소 합니다")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "CREATED: 댓글 좋아요 취소 성공"),
-            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 댓글 좋아요 취소 실패. 요청값 확인 필요합니다"),
-            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
-            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
-            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
-    })
-    @DeleteMapping("/delete/{likeSeq}")
-    public ResponseEntity<?> deleteReplyLike(@PathVariable Long likeSeq,@RequestHeader("Authorizaiton")String auth) {
-        ReplyLikeEntity deletedPostLikeEntity = replyLikeService.deleteReplyLike(likeSeq, auth);
-        if(deletedPostLikeEntity == null) {
-            return ResponseEntity.status(HttpStatus.OK).body("댓글 좋아요 취소 실패");
-        }
-        else{
-            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("댓글 좋아요 취소 성공");
-        }
+    @PostMapping("/{replySeq}")
+    public ResponseEntity<Boolean> likeReply(@PathVariable Long replySeq, @RequestHeader("Authorizaiton")String auth) {
+        return replyLikeService.likeReply(replySeq, auth);
     }
 
     @Operation(summary = "댓글 별 좋아요 조회 API", description = "댓글 별 삭제되지 않은 모든 좋아요를 조회 합니다")
