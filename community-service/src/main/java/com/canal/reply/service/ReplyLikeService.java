@@ -50,6 +50,15 @@ public class ReplyLikeService {
                     return ResponseEntity.status(HttpStatus.OK).body(true);
                 }
                 else{
+                    replyLikeEntity.setDeleted(true);
+                    replyLikeEntity.setUpdatedAt(LocalDateTime.now());
+                    replyLikeRepository.save(replyLikeEntity);
+
+                    // reply 테이블 reply_like_num update
+                    ReplyEntity reply =  replyRepository.findByReplySeq(replySeq);
+                    reply.setReplyLikeNum(reply.getReplyLikeNum()-1);
+                    postRepository.save(reply);
+
                     return ResponseEntity.status(HttpStatus.OK).body(false);
                 }
             }
@@ -58,33 +67,6 @@ public class ReplyLikeService {
             }
         }catch (Exception e){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(false);
-        }
-    }
-
-    // 댓글 좋아요 취소
-    public ReplyLikeEntity deleteReplyLike(Long likeSeq, String auth){
-        try{
-            // userSeq 요청
-            Long userSeq = userServiceClient.getUserSeq(auth);
-            // 좋아요 존재 여부 확인
-            ReplyLikeEntity replyLikeEntity = replyLikeRepository.findByLikeSeqAndUserSeq(likeSeq, userSeq);
-            if(replyLikeEntity != null && !replyLikeEntity.isDeleted()){
-                replyLikeEntity.setDeleted(true);
-                replyLikeEntity.setUpdatedAt(LocalDateTime.now());
-                replyLikeRepository.save(replyLikeEntity);
-
-                // reply 테이블 reply_like_num update
-                ReplyEntity replyEntity =  replyRepository.findByReplySeq(replyLikeEntity.getReplySeq());
-                replyEntity.setReplyLikeNum(replyEntity.getReplyLikeNum()-1);
-                postRepository.save(replyEntity);
-
-                return replyLikeEntity;
-            }
-            else{
-                return null;
-            }
-        }catch (Exception e){
-            return null;
         }
     }
 

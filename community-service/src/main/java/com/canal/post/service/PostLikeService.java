@@ -51,7 +51,7 @@ public class PostLikeService {
                 postLikeRepository.save(postLikeEntity);
 
                 // post 테이블 post_like_num update
-                PostEntity postEntity =  postRepository.findByPostSeq(postLikeEntity.getPostSeq());
+                PostEntity postEntity =  postRepository.findByPostSeq(postSeq);
                 postEntity.setPostLikeNum(postEntity.getPostLikeNum()-1);
                 postRepository.save(postEntity);
 
