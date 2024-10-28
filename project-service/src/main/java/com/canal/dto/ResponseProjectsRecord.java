@@ -1,8 +1,9 @@
 package com.canal.dto;
 
 import com.canal.domain.ProjectEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
 
-
+@Schema(description = "프로젝트 데이터 dto")
 public record ResponseProjectsRecord(
         Long projectSeq,
         String projectName,

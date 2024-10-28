@@ -81,7 +81,7 @@ public class ProjectService {
         return true;
     }
 
-    public boolean createProject(RequestProject requestProject, String token){
+    public ResponseProjectsRecord createProject(RequestProject requestProject, String token){
         try{
             // userSeq 추출
             Long userSeq = getUserSeq(token);
@@ -90,10 +90,10 @@ public class ProjectService {
             ProjectEntity projectEntity = modelMapper.map(requestProject, ProjectEntity.class);
             projectEntity.setUserSeq(userSeq);
             projectRepository.save(projectEntity);
-            return true;
+            return new ResponseProjectsRecord(projectEntity);
         }catch (Exception e){
             log.error(e.getMessage());
-            return false;
+            return null;
         }
     }
 
