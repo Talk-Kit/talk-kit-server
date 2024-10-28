@@ -44,7 +44,7 @@ public class ProjectController {
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 프로젝트 생성 실패"),
     })
     @PostMapping("/project")
-    public ResponseEntity<String> createProject(
+    public ResponseEntity<?> createProject(
             @RequestBody RequestProject requestProject,
             @RequestHeader("Authorization")String token) {
 
@@ -54,11 +54,11 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.CONFLICT).body("중복된 프로젝트명");
         }
         // 프로젝트 생성
-        boolean success  = projectService.createProject(requestProject,token);
-        if (!success){
+        ResponseProjectsRecord success  = projectService.createProject(requestProject,token);
+        if (success == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("프로젝트 생성 실패");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("프로젝트 생성 성공");
+        return ResponseEntity.status(HttpStatus.CREATED).body(success);
     }
 
     @Operation(summary = "프로젝트 수정 API", description = "프로젝트명을 수정합니다")
