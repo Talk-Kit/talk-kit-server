@@ -9,6 +9,7 @@ public interface PostRepository  extends JpaRepository<PostEntity, Long> {
     PostEntity findByPostSeq(Long postSeq);
     PostEntity findByPostSeqAndUserSeq(Long postSeq, Long userSeq);
     List<PostEntity> findByPostType(int postType);
+    List<PostEntity> findTop5ByDeletedOrderByPostLikeNumDescUpdatedAtDesc(boolean deleted);
     @Override
     PostEntity save(PostEntity post);
     PostEntity deleteByPostSeq(Long postSeq);
