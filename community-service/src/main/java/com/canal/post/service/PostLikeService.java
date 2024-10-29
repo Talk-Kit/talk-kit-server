@@ -4,6 +4,7 @@ import com.canal.client.UserServiceClient;
 import com.canal.post.domain.PostEntity;
 import com.canal.post.domain.PostLikeEntity;
 import com.canal.post.dto.ResponsePostLikeRecord;
+import com.canal.post.dto.ResponsePostRecord;
 import com.canal.post.repository.PostLikeRepository;
 import com.canal.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -73,11 +74,25 @@ public class PostLikeService {
                 }
             });
 
-            System.out.println(likeList.size());
             return likeList.size();
         }
         catch (Exception e){
             return 0;
+        }
+    }
+
+    // 게시글 TOP5 조회
+    public List<ResponsePostRecord> getTop5PostLike() {
+        try{
+            List<PostEntity> posts = postRepository.findTop5ByDeletedOrderByPostLikeNumDescUpdatedAtDesc(false);
+            List<ResponsePostRecord> postList = new ArrayList<>();
+            posts.forEach(post -> {
+                postList.add(new ResponsePostRecord(post));
+            });
+            return postList;
+        }
+        catch (Exception e){
+            return null;
         }
     }
 
