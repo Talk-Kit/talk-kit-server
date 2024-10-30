@@ -21,6 +21,8 @@ public class RequestAddPost {
     @NotNull
     private String postScope;
 
+    private String postSecret;
+
     private List<Long> files;
 
 }
