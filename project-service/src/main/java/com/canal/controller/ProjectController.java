@@ -36,6 +36,17 @@ public class ProjectController {
         this.projectService = projectService;
         this.nhnAuthService = nhnAuthService;
     }
+    
+    @Operation(summary = "대본 수정 API", description = "대본을 수정합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200",description = "ok: 수정 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 대본 수정 실패"),
+    })
+    @PutMapping("/update/script")
+    public ResponseEntity<?> updateScript(@RequestHeader("Authorization")String token,
+                                          @RequestBody RequestUpdateScript requestUpdateScript){
+        return projectService.updateScript(requestUpdateScript);
+    }
 
     @Operation(summary = "프로젝트 생성 API", description = "프로젝트를 생성합니다")
     @ApiResponses({
@@ -126,7 +137,7 @@ public class ProjectController {
 
     })
     @PostMapping(value = "/file/{projectSeq}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<String> uploadFile(
+    public ResponseEntity<?> uploadFile(
             @Parameter(content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
             @RequestPart("file") MultipartFile file ,
             @PathVariable("projectSeq")Long projectSeq,
@@ -144,11 +155,11 @@ public class ProjectController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("스토리지 업로드 실패: 요청값을 확인해주세요");
         }
         // 디비 저장
-        boolean success = projectService.saveFiles(storageUrl,projectSeq,file.getOriginalFilename());
-        if (!success){
+        ResponseFiles responseFiles = projectService.saveFiles(storageUrl,projectSeq,file.getOriginalFilename());
+        if (responseFiles == null){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("디비 저장 실패: 요청값을 확인해주세요");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body("파일 저장 성공");
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseFiles);
     }
 
 

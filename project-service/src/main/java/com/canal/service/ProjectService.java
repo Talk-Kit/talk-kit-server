@@ -69,6 +69,15 @@ public class ProjectService {
         this.fileRepository = fileRepository;
         this.nhnAuthService = nhnAuthService;
     }
+    public ResponseEntity<?> updateScript(RequestUpdateScript requestUpdateScript){
+        FileEntity fileEntity = fileRepository.findByFileSeqAndDeleted(requestUpdateScript.fileSeq(),false);
+        if(fileEntity == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("존재하지 않은 파일 시퀀스");
+        }
+        fileEntity.setFileContent(requestUpdateScript.fileContent());
+        fileRepository.save(fileEntity);
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseFiles(fileEntity));
+    }
 
     public boolean checkProjectName(String projectName,String token){
         Long userSeq = getUserSeq(token);
@@ -164,11 +173,11 @@ public class ProjectService {
     }
 
     @Transactional
-    public boolean saveFiles(String storageUrl,Long projectSeq,String fileName){
+    public ResponseFiles saveFiles(String storageUrl,Long projectSeq,String fileName){
         try{
             ProjectEntity projectEntity = projectRepository.findByProjectSeqAndDeleted(projectSeq,false);
             if (projectEntity == null) {
-                return false;
+                return null;
             }
 
             FileEntity fileEntity = new FileEntity();
@@ -176,11 +185,11 @@ public class ProjectService {
             fileEntity.setFileUrl(storageUrl);
             fileEntity.setProjectSeq(projectSeq);
             fileRepository.save(fileEntity);
-            return true;
+            return new ResponseFiles(fileEntity);
         } catch (Exception e) {
 
             log.error(e.getMessage());
-            return false;
+            return null;
         }
     }
     public boolean saveScript(Long projectSeq,RequestScript requestScript){
