@@ -204,9 +204,9 @@ public class ProjectController {
         }
         return ResponseEntity.status(HttpStatus.OK).body("삭제완료");
     }
-    @PostMapping("/file/download")
-    public ResponseEntity<?> downloadFile(@RequestBody RequestDownload url){
-        return projectService.downloadFile(url.fileUrl());
+    @GetMapping("/file/download")
+    public ResponseEntity<?> downloadFile(@RequestParam("fileUrl") String fileUrl){
+        return projectService.downloadFile(fileUrl);
     }
     /*for feign client*/
     @Operation(hidden = true)
