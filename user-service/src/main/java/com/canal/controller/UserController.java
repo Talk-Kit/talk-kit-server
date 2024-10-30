@@ -137,6 +137,18 @@ public class UserController {
 		return userService.getUserByJwt(request);
 	}
 
+	@Operation(summary = "커뮤니티 사용자 정보 조회 API", description = "커뮤니티 게시글에 관한 사용자의 정보를 조회합니다")
+	@ApiResponses({
+			@ApiResponse(responseCode = "200", description = "OK: 회원 정보 조회 성공"),
+			@ApiResponse(responseCode = "400", description = "BAD REQUEST: 요청값 확인 필요합니다"),
+			@ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+			@ApiResponse(responseCode = "404", description = "NOT_FOUND: 조회된 사용자 정보 없음")
+	})
+	@GetMapping("/user/{userSeq}")
+	public ResponseEntity<?> getUserBySeq(@PathVariable("userSeq")Long userSeq) {
+		return userService.getUserByUserSeq(userSeq);
+	}
+
 	/*feign client*/
 	@Operation(hidden = true)
 	@GetMapping("/client/user")
