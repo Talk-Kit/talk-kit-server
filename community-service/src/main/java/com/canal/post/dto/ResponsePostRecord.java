@@ -2,6 +2,8 @@ package com.canal.post.dto;
 
 import com.canal.post.domain.PostEntity;
 
+import java.time.LocalDateTime;
+
 public record ResponsePostRecord(
         Long postSeq,
         String postTitle,
@@ -10,11 +12,16 @@ public record ResponsePostRecord(
         int postLikeNum,
         String postContent,
         String postScope,
-        Long userSeq
+        Long userSeq,
+        String postSecret,
+        LocalDateTime createdAt,
+        String userNickname,
+        String userAffiliation
 ){
-    public ResponsePostRecord(PostEntity postEntity) {
+    public ResponsePostRecord(PostEntity postEntity, ResponseUserRecord responseUserRecord) {
         this(postEntity.getPostSeq(),postEntity.getPostTitle(), postEntity.getPostType(), postEntity.isDeleted(),
                 postEntity.getPostLikeNum(), postEntity.getPostContent(), postEntity.getPostScope(),
-                postEntity.getUserSeq());
+                postEntity.getUserSeq(), postEntity.getPostSecret(), postEntity.getCreatedAt(),
+                responseUserRecord.userNickname(),responseUserRecord.userAffiliation());
     }
 }

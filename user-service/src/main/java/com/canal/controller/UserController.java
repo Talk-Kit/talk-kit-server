@@ -1,5 +1,6 @@
 package com.canal.controller;
 
+import com.canal.domain.UserEntity;
 import com.canal.dto.*;
 import com.canal.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -142,6 +143,12 @@ public class UserController {
 	public ResponseEntity<Long> getUserSeq(@RequestHeader("Authorization") String auth){
 		Long userSeq = userService.getUserSeq(auth);
 		return ResponseEntity.status(HttpStatus.OK).body(userSeq);
+	}
+
+	@Operation(hidden = true)
+	@GetMapping("/client/specific/user")
+	public ResponseEntity<?> getUser(Long userSeq) {
+		return userService.getUserByUserSeq(userSeq);
 	}
 
 }
