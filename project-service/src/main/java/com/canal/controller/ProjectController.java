@@ -16,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 
 
 @RestController
@@ -205,7 +206,7 @@ public class ProjectController {
         return ResponseEntity.status(HttpStatus.OK).body("삭제완료");
     }
     @GetMapping("/file/download")
-    public ResponseEntity<?> downloadFile(@RequestParam("fileUrl") String fileUrl){
+    public ResponseEntity<?> downloadFile(@RequestParam("fileUrl") String fileUrl) throws IOException {
         return projectService.downloadFile(fileUrl);
     }
     /*for feign client*/
