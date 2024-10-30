@@ -58,13 +58,16 @@ public class PostService {
             PostEntity savedPost = postRepository.save(postEntity);
 
             // 게시된 파일 저장
-            requestAddPost.getFiles().forEach(pfile -> {
-                RequestAddPostedFile requestAddPostedFile = new RequestAddPostedFile();
-                requestAddPostedFile.setPostSeq(savedPost.getPostSeq());
-                requestAddPostedFile.setFileSeq(pfile);
-                PostedFileEntity postedFileEntity = modelMapper.map(requestAddPostedFile, PostedFileEntity.class);
-                postedFileRepository.save(postedFileEntity);
-            });
+            List<Long> fileList = requestAddPost.getFiles();
+            if (fileList != null && !fileList.isEmpty()) {
+                fileList.forEach(pfile -> {
+                    RequestAddPostedFile requestAddPostedFile = new RequestAddPostedFile();
+                    requestAddPostedFile.setPostSeq(savedPost.getPostSeq());
+                    requestAddPostedFile.setFileSeq(pfile);
+                    PostedFileEntity postedFileEntity = modelMapper.map(requestAddPostedFile, PostedFileEntity.class);
+                    postedFileRepository.save(postedFileEntity);
+                });
+            }
 
             // 업로드 할 이미지 파일이 없는 경우
             if(file == null || file.length == 0){
