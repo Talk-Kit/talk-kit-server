@@ -1,5 +1,6 @@
 package com.canal.post.dto;
 
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ public class RequestAddPost {
     @NotNull
     private String postTitle;
 
-    @NotNull
+    @NotBlank
     private int postType;
 
     @NotNull
