@@ -8,6 +8,7 @@ import com.canal.post.domain.PostedFileEntity;
 import com.canal.post.dto.RequestAddPost;
 import com.canal.post.dto.RequestAddPostedFile;
 import com.canal.post.dto.ResponsePostRecord;
+import com.canal.post.dto.ResponseUserRecord;
 import com.canal.post.repository.ImgFileRepository;
 import com.canal.post.repository.PostRepository;
 import com.canal.post.repository.PostedFileRepository;
@@ -32,7 +33,7 @@ public class PostService {
     private final PostedFileRepository postedFileRepository;
     private final ModelMapper modelMapper;
     private final UserServiceClient userServiceClient;
-    private static final Map<String,String> contentTypeMap = new HashMap<>();
+    private static final Map<String, String> contentTypeMap = new HashMap<>();
     private final NHNStorageClient nhnStorageClient;
     private final NHNAuthService nhnAuthService;
     @Value("${nhn.storage.url}")
@@ -47,8 +48,8 @@ public class PostService {
 
     // 게시글 작성
     @Transactional
-    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, MultipartFile[] file, String auth){
-        try{
+    public ResponseEntity<?> createPost(RequestAddPost requestAddPost, MultipartFile[] file, String auth) {
+        try {
             // userSeq 요청
             Long userSeq = userServiceClient.getUserSeq(auth);
             // entity 저장
@@ -70,41 +71,41 @@ public class PostService {
             }
 
             // 업로드 할 이미지 파일이 없는 경우
-            if(file == null || file.length == 0){
+            if (file == null || file.length == 0) {
                 return ResponseEntity.status(HttpStatus.CREATED).body("게시물 생성 성공");
             }
             // nhn 토큰 발급
             String nhnToken = nhnAuthService.getNHNToken();
-            if (nhnToken == null){ // 발급 실패시
+            if (nhnToken == null) { // 발급 실패시
                 postRepository.deleteByPostSeq(savedPost.getPostSeq());
                 return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("NHN 토큰 발급 실패");
             }
-            for (MultipartFile fileSave : file){
+            for (MultipartFile fileSave : file) {
                 // 스토리지 업로드
                 String storageUrl = uploadFile(fileSave, nhnToken, savedPost.getPostSeq());
-                if (storageUrl == null){
+                if (storageUrl == null) {
                     postRepository.deleteByPostSeq(savedPost.getPostSeq());
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("스토리지 업로드 실패: 요청값을 확인해주세요");
                 }
                 // 디비 저장
                 boolean success = saveFiles(storageUrl, savedPost.getPostSeq(), fileSave.getOriginalFilename());
-                if (!success){
+                if (!success) {
                     postRepository.deleteByPostSeq(savedPost.getPostSeq());
                     return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("디비 저장 실패: 요청값을 확인해주세요");
                 }
             }
             return ResponseEntity.status(HttpStatus.CREATED).body("게시물 생성, 파일 저장 성공");
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 생성 실패");
         }
     }
 
     @Transactional
-    public String uploadFile(MultipartFile file, String nhnToken, Long postSeq){
-        try{
+    public String uploadFile(MultipartFile file, String nhnToken, Long postSeq) {
+        try {
             // 스토리지 저장시 postSeq 폴더를 생성
 
-            String folder = "p"+postSeq;
+            String folder = "p" + postSeq;
             String contentType = file.getContentType();
             String objectName = setRandomFileName(contentType);
             byte[] bytes = file.getBytes();
@@ -115,10 +116,10 @@ public class PostService {
                     contentType,
                     bytes
             );
-            if (response.getStatusCode().value() != 201){
+            if (response.getStatusCode().value() != 201) {
                 return null;
             }
-            return STORAGE_URL+"/"+folder+"/"+objectName; // 스토리지 저장 성공시 url 반환
+            return STORAGE_URL + "/" + folder + "/" + objectName; // 스토리지 저장 성공시 url 반환
 
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -126,17 +127,17 @@ public class PostService {
         }
     }
 
-    private String setRandomFileName(String contentType){
+    private String setRandomFileName(String contentType) {
         String extension = contentTypeMap.get(contentType);
-        if (extension == null){
+        if (extension == null) {
             extension = ".bin";
         }
         return UUID.randomUUID().toString() + extension;
     }
 
     @Transactional
-    public boolean saveFiles(String storageUrl, Long postSeq, String fileName){
-        try{
+    public boolean saveFiles(String storageUrl, Long postSeq, String fileName) {
+        try {
             ImgFileEntity imgFileEntity = new ImgFileEntity();
             imgFileEntity.setFileUrl(storageUrl);
             imgFileEntity.setPostSeq(postSeq);
@@ -149,13 +150,13 @@ public class PostService {
     }
 
     // 게시글 삭제
-    public ResponseEntity<?> delete(Long postSeq, String auth){
-        try{
+    public ResponseEntity<?> delete(Long postSeq, String auth) {
+        try {
             // userSeq 요청
             Long userSeq = userServiceClient.getUserSeq(auth);
             // userSeq 값 일치 여부 확인
             PostEntity postEntity = postRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
-            if(postEntity != null && !postEntity.isDeleted()){
+            if (postEntity != null && !postEntity.isDeleted()) {
                 modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
 
                 postEntity.deletePost();
@@ -170,27 +171,26 @@ public class PostService {
                 deleteFile(postSeq);
 
                 return ResponseEntity.status(HttpStatus.OK).body("게시물 삭제 성공");
-            }
-            else{
+            } else {
                 return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 삭제 실패");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body("게시물 삭제 실패");
         }
     }
 
     // 파일 삭제
     @Transactional
-    public boolean deleteFile(Long postSeq){
-        try{
-            List<ImgFileEntity> imgFileEntity = imgFileRepository.findByPostSeqAndDeleted(postSeq,false);
+    public boolean deleteFile(Long postSeq) {
+        try {
+            List<ImgFileEntity> imgFileEntity = imgFileRepository.findByPostSeqAndDeleted(postSeq, false);
             imgFileEntity.forEach(files -> {
                 files.setDeleted(true);
                 imgFileRepository.save(files);
             });
 
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(e.getMessage());
             return false;
         }
@@ -198,12 +198,12 @@ public class PostService {
 
     // 게시판 유형 별 삭제되지 않은 모든 게시글 가져오기
     public List<ResponsePostRecord> getAllPostByPostType(int postType) {
-        List<PostEntity> posts = postRepository.findByPostType(postType);
+        List<PostEntity> posts = postRepository.findByPostTypeAndDeleted(postType, false);
         List<ResponsePostRecord> userList = new ArrayList<>();
         posts.forEach(post -> {
-            if(!post.isDeleted()){
-                userList.add(new ResponsePostRecord(post));
-            }
+            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+            ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
+            userList.add(new ResponsePostRecord(post, user));
         });
 
         return userList;
@@ -211,11 +211,13 @@ public class PostService {
 
     // 게시판 유형 별 삭제되지 않은 모든 공개 게시글 가져오기
     public List<ResponsePostRecord> getAllPublicPostByPostType(int postType) {
-        List<PostEntity> posts = postRepository.findByPostType(postType);
+        List<PostEntity> posts = postRepository.findByPostTypeAndDeleted(postType, false);
         List<ResponsePostRecord> userList = new ArrayList<>();
         posts.forEach(post -> {
-            if(!post.isDeleted() && post.getPostScope().equals("public")){
-                userList.add(new ResponsePostRecord(post));
+            if (post.getPostScope().equals("public")) {
+                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+                ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
+                userList.add(new ResponsePostRecord(post, user));
             }
         });
 
@@ -227,9 +229,11 @@ public class PostService {
         List<PostEntity> posts = postRepository.findAll();
         List<ResponsePostRecord> userList = new ArrayList<>();
         posts.forEach(post -> {
-            if(!post.isDeleted()){
-                if(post.getPostContent().contains(keyword) || post.getPostTitle().contains(keyword)){
-                    userList.add(new ResponsePostRecord(post));
+            if (!post.isDeleted()) {
+                if (post.getPostContent().contains(keyword) || post.getPostTitle().contains(keyword)) {
+                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+                    ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
+                    userList.add(new ResponsePostRecord(post, user));
                 }
             }
         });

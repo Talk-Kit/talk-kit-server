@@ -252,4 +252,12 @@ public class UserService  {
         return userEntity.getUserSeq();
     }
 
+    public ResponseEntity<?> getUserByUserSeq(Long userSeq) {
+        UserEntity userEntity = userRepository.findByUserSeq(userSeq);
+        if (userEntity == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseUsersRecord(userEntity));
+    }
+
 }
