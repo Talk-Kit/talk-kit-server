@@ -1,6 +1,8 @@
 package com.canal.client;
 
+import jakarta.annotation.Resource;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +25,14 @@ public interface NHNStorageClient {
             @PathVariable("Object")String objectName,
             @RequestHeader("X-Auth-Token") String nhnToken
     );
+
+    @GetMapping("/{Folder}/{Object}")
+    ResponseEntity<InputStreamResource> downloadFile(
+            @PathVariable("Folder")String folder,
+            @PathVariable("Object")String objectName,
+            @RequestHeader("X-Auth-Token") String nhnToken
+    );
+
 
 
 }

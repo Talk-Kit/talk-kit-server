@@ -13,12 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
 import org.springframework.http.*;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -284,6 +286,24 @@ public class ProjectService {
         });
     }
 
+    public ResponseEntity<InputStreamResource> downloadFile(String fileUrl){
+        String nhnToken = nhnAuthService.getNHNToken();
+        String[] variables = getStoragePathVariables(fileUrl);
+        String folder = variables[0];
+        String objectName = variables[1];
+        ResponseEntity<InputStreamResource> response = nhnStorageClient.downloadFile(folder,objectName,nhnToken);
+        if (response.getStatusCode() == HttpStatus.OK){
+            InputStreamResource inputStream = response.getBody();
+            HttpHeaders headers = new HttpHeaders();
+            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + objectName + "\"");
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                    .body(inputStream);
+        }
+        return ResponseEntity.status(response.getStatusCode()).body(null);
+    }
+
     private Long getUserSeq(String token){
         Long userSeq = userServiceClient.getUserSeq(token);
         return userSeq;
@@ -303,6 +323,7 @@ public class ProjectService {
         int targetIndex = storageUrl.indexOf(target);
         String filtered = storageUrl.substring(targetIndex+target.length());
         String[] words = filtered.split("/");
+
         return words;
     }
 
