@@ -67,7 +67,7 @@ public class PostService {
             });
 
             // 업로드 할 이미지 파일이 없는 경우
-            if(file.length == 0){
+            if(file == null || file.length == 0){
                 return ResponseEntity.status(HttpStatus.CREATED).body("게시물 생성 성공");
             }
             // nhn 토큰 발급
