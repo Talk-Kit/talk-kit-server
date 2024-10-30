@@ -14,7 +14,7 @@ public class ReplyReportEntity extends BaseEntity {
     @Column(name = "report_seq",updatable = false)
     private Long reportSeq;
 
-    @Column(name= "reply_deleted", nullable = false)
+    @Column(name= "reply_report_deleted", nullable = false)
     @ColumnDefault("false")
     private boolean deleted;
 

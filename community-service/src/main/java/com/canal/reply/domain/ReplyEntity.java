@@ -27,7 +27,8 @@ public class ReplyEntity extends BaseEntity {
     @Column(name = "reply_order", nullable = false)
     private int replyOrder;
 
-    @Column(name = "reply_like_num")
+    @Column(name = "reply_like_num", nullable = false)
+    @ColumnDefault("0")
     private int replyLikeNum;
 
     @Column(name = "post_seq", nullable = false, updatable = false)
