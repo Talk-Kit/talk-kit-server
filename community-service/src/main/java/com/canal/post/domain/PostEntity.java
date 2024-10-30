@@ -36,6 +36,9 @@ public class PostEntity extends BaseEntity {
     @Column(name = "post_scope", nullable = false)
     private String postScope;
 
+    @Column(name = "post_secret")
+    private String postSecret;
+
     @Column(name = "user_seq", nullable = false, updatable = false)
     private Long userSeq;
 
