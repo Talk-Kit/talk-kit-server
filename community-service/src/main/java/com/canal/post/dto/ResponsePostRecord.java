@@ -14,14 +14,11 @@ public record ResponsePostRecord(
         String postScope,
         Long userSeq,
         String postSecret,
-        LocalDateTime createdAt,
-        String userNickname,
-        String userAffiliation
+        LocalDateTime createdAt
 ){
-    public ResponsePostRecord(PostEntity postEntity, ResponseUserRecord responseUserRecord) {
+    public ResponsePostRecord(PostEntity postEntity) {
         this(postEntity.getPostSeq(),postEntity.getPostTitle(), postEntity.getPostType(), postEntity.isDeleted(),
                 postEntity.getPostLikeNum(), postEntity.getPostContent(), postEntity.getPostScope(),
-                postEntity.getUserSeq(), postEntity.getPostSecret(), postEntity.getCreatedAt(),
-                responseUserRecord.userNickname(),responseUserRecord.userAffiliation());
+                postEntity.getUserSeq(), postEntity.getPostSecret(), postEntity.getCreatedAt());
     }
 }

@@ -8,7 +8,6 @@ import com.canal.post.domain.PostedFileEntity;
 import com.canal.post.dto.RequestAddPost;
 import com.canal.post.dto.RequestAddPostedFile;
 import com.canal.post.dto.ResponsePostRecord;
-import com.canal.post.dto.ResponseUserRecord;
 import com.canal.post.repository.ImgFileRepository;
 import com.canal.post.repository.PostRepository;
 import com.canal.post.repository.PostedFileRepository;
@@ -201,9 +200,7 @@ public class PostService {
         List<PostEntity> posts = postRepository.findByPostTypeAndDeleted(postType, false);
         List<ResponsePostRecord> userList = new ArrayList<>();
         posts.forEach(post -> {
-            modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-            ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
-            userList.add(new ResponsePostRecord(post, user));
+            userList.add(new ResponsePostRecord(post));
         });
 
         return userList;
@@ -215,9 +212,7 @@ public class PostService {
         List<ResponsePostRecord> userList = new ArrayList<>();
         posts.forEach(post -> {
             if (post.getPostScope().equals("public")) {
-                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-                ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
-                userList.add(new ResponsePostRecord(post, user));
+                userList.add(new ResponsePostRecord(post));
             }
         });
 
@@ -231,9 +226,7 @@ public class PostService {
         posts.forEach(post -> {
             if (!post.isDeleted()) {
                 if (post.getPostContent().contains(keyword) || post.getPostTitle().contains(keyword)) {
-                    modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-                    ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
-                    userList.add(new ResponsePostRecord(post, user));
+                    userList.add(new ResponsePostRecord(post));
                 }
             }
         });
