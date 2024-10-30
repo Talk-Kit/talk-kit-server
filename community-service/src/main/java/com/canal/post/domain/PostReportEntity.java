@@ -16,7 +16,7 @@ public class PostReportEntity extends BaseEntity {
     @Column(name = "report_seq",updatable = false)
     private Long reportSeq;
 
-    @Column(name= "post_deleted", nullable = false)
+    @Column(name= "report_deleted", nullable = false)
     @ColumnDefault("false")
     private boolean deleted;
 

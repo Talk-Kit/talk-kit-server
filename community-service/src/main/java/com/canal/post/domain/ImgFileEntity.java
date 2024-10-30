@@ -19,7 +19,7 @@ public class ImgFileEntity extends BaseEntity {
     @Column(name = "file_url", nullable = false)
     private String fileUrl;
 
-    @Column(name= "post_deleted", nullable = false)
+    @Column(name= "img_file_deleted", nullable = false)
     @ColumnDefault("false")
     private boolean deleted;
 

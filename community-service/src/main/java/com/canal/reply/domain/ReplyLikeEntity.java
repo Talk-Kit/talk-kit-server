@@ -14,7 +14,7 @@ public class ReplyLikeEntity extends BaseEntity {
     @Column(name = "like_seq",updatable = false)
     private Long likeSeq;
 
-    @Column(name= "reply_deleted", nullable = false)
+    @Column(name= "reply_like_deleted", nullable = false)
     @ColumnDefault("false")
     private boolean deleted;
 
