@@ -257,7 +257,7 @@ public class UserService  {
         if (userEntity == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        return ResponseEntity.status(HttpStatus.OK).body(new ResponseUsersRecord(userEntity));
+        return ResponseEntity.status(HttpStatus.OK).body(new ResponseUserForComm(userEntity));
     }
 
 }
