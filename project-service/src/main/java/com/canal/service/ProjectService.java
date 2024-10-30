@@ -289,11 +289,12 @@ public class ProjectService {
         });
     }
 
-    public ResponseEntity<InputStreamResource> downloadFile(String fileUrl) throws IOException {
+    public ResponseEntity<byte[]> downloadFile(String fileUrl) throws IOException {
         String nhnToken = nhnAuthService.getNHNToken();
         String[] variables = getStoragePathVariables(fileUrl);
         String folder = variables[0];
         String objectName = variables[1];
+
         ResponseEntity<InputStreamResource> response = nhnStorageClient.downloadFile(folder, objectName, nhnToken);
 
         if (response.getStatusCode() == HttpStatus.OK) {
@@ -306,10 +307,12 @@ public class ProjectService {
                 byte[] fileBytes = outputStream.toByteArray();
                 HttpHeaders headers = new HttpHeaders();
                 headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + objectName + "\"");
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                headers.setContentLength(fileBytes.length);
+
                 return ResponseEntity.ok()
                         .headers(headers)
-                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                        .body(new InputStreamResource(new ByteArrayInputStream(fileBytes)));
+                        .body(fileBytes);
             } catch (IOException e) {
                 e.printStackTrace();
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
@@ -327,7 +330,7 @@ public class ProjectService {
     private String setRandomFileName(String contentType){
         String extension = contentTypeMap.get(contentType);
         if (extension == null){
-            extension = ".bin";
+            extension = ".ext";
         }
         return UUID.randomUUID().toString() + extension;
     }
