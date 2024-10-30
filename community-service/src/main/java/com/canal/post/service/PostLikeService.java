@@ -5,13 +5,10 @@ import com.canal.post.domain.PostEntity;
 import com.canal.post.domain.PostLikeEntity;
 import com.canal.post.dto.ResponsePostLikeRecord;
 import com.canal.post.dto.ResponsePostRecord;
-import com.canal.post.dto.ResponseUserRecord;
 import com.canal.post.repository.PostLikeRepository;
 import com.canal.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.modelmapper.ModelMapper;
-import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -26,7 +23,6 @@ public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final UserServiceClient userServiceClient;
-    private final ModelMapper modelMapper;
 
     // 게시글 좋아요
     public ResponseEntity<Boolean> likePost(Long postSeq, String auth){
@@ -91,9 +87,7 @@ public class PostLikeService {
             List<PostEntity> posts = postRepository.findTop5ByDeletedOrderByPostLikeNumDescUpdatedAtDesc(false);
             List<ResponsePostRecord> postList = new ArrayList<>();
             posts.forEach(post -> {
-                modelMapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
-                ResponseUserRecord user = modelMapper.map(userServiceClient.getUser(post.getUserSeq()), ResponseUserRecord.class);
-                postList.add(new ResponsePostRecord(post, user));
+                postList.add(new ResponsePostRecord(post));
             });
             return postList;
         }
