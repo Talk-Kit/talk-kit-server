@@ -10,5 +10,5 @@ public interface ReplyRepository extends JpaRepository<ReplyEntity, Long> {
     ReplyEntity findByReplySeq(Long replySeq);
     ReplyEntity findByReplySeqAndUserSeq(Long replySeq, Long userSeq);
     List<ReplyEntity> findByPostSeq(Long postSeq);
-    List<ReplyEntity> findByPostSeqOrderByReplyOrderAscReplyDepth(Long postSeq);
+    List<ReplyEntity> findByPostSeqOrderByReplyOrderAscReplyDepthAscCreatedAtDesc(Long postSeq);
 }
