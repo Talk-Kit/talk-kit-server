@@ -102,9 +102,9 @@ public class PostController {
             @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
     })
     @GetMapping("/{postSeq}")
-    public ResponseEntity<PostEntity> getPostByPostSeq(@PathVariable Long postSeq) {
+    public ResponseEntity<ResponsePostRecord> getPostByPostSeq(@PathVariable Long postSeq) {
 
-        PostEntity result = postService.getPostByPostSeq(postSeq);
+        ResponsePostRecord result = postService.getPostByPostSeq(postSeq);
 
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }

@@ -220,10 +220,10 @@ public class PostService {
     }
 
     // 단일 게시글 가져오기
-    public PostEntity getPostByPostSeq(Long postSeq) {
+    public ResponsePostRecord getPostByPostSeq(Long postSeq) {
         PostEntity post = postRepository.findByPostSeqAndDeleted(postSeq, false);
 
-        return post;
+        return new ResponsePostRecord(post);
     }
 
     // 키워드 검색
