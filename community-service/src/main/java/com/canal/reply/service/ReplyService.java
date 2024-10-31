@@ -159,7 +159,7 @@ public class ReplyService {
 
     // 게시글 별 삭제되지 않은 모든 댓글, 대댓글 가져오기
     public List<ResponseReplyRecord> getAllReplyByPostSeq(Long postSeq) {
-        List<ReplyEntity> replys = replyRepository.findByPostSeqOrderByReplyOrderAscReplyDepth(postSeq);
+        List<ReplyEntity> replys = replyRepository.findByPostSeqOrderByReplyOrderAscReplyDepthAscCreatedAtDesc(postSeq);
         List<ResponseReplyRecord> userList = new ArrayList<>();
         replys.forEach(reply -> {
             if(!reply.isDeleted()){

@@ -1,6 +1,7 @@
 package com.canal.post.controller;
 
 import com.canal.client.ProjectServiceClient;
+import com.canal.post.domain.PostEntity;
 import com.canal.post.dto.*;
 import com.canal.post.service.NHNAuthService;
 import com.canal.post.service.PostService;
@@ -90,6 +91,22 @@ public class PostController {
         List<ResponsePostRecord> resultList = postService.getAllPublicPostByPostType(postType);
 
         return ResponseEntity.status(HttpStatus.OK).body(resultList);
+    }
+
+    @Operation(summary = "단일 게시물 조회 API", description = "단일 게시물을 조회합니다")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "CREATED: 게시글 조회 성공"),
+            @ApiResponse(responseCode = "400", description = "BAD REQUEST: 게시글 조회 실패. 요청값 확인 필요합니다"),
+            @ApiResponse(responseCode = "401", description = "Unauthorized: 인증 실패. 주로 JWT 에러"),
+            @ApiResponse(responseCode = "403", description = "Forbidden: 권한이 없는 페이지. 주로 잘못된 URL"),
+            @ApiResponse(responseCode = "500", description = "INTERNAL SERVER ERROR : 서버 다운 또는 로딩중"),
+    })
+    @GetMapping("/{postSeq}")
+    public ResponseEntity<PostEntity> getPostByPostSeq(@PathVariable Long postSeq) {
+
+        PostEntity result = postService.getPostByPostSeq(postSeq);
+
+        return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
     @Operation(summary = "게시글 검색 API", description = "키워드로 게시글을 조회합니다")

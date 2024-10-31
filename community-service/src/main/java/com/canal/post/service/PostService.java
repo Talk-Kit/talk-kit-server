@@ -219,6 +219,13 @@ public class PostService {
         return userList;
     }
 
+    // 단일 게시글 가져오기
+    public PostEntity getPostByPostSeq(Long postSeq) {
+        PostEntity post = postRepository.findByPostSeqAndDeleted(postSeq, false);
+
+        return post;
+    }
+
     // 키워드 검색
     public List<ResponsePostRecord> getKeywordPost(String keyword) {
         List<PostEntity> posts = postRepository.findAll();
