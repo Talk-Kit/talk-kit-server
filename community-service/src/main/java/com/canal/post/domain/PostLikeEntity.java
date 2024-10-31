@@ -31,4 +31,9 @@ public class PostLikeEntity extends BaseEntity {
         setUpdatedAt(LocalDateTime.now());
     }
 
+    public void reCreatePostLike(){
+        this.deleted = false;
+        setUpdatedAt(LocalDateTime.now());
+    }
+
 }
