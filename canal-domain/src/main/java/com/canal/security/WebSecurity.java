@@ -40,6 +40,7 @@ public class WebSecurity {
                         .requestMatchers(HttpMethod.POST,"/api/user-service/join").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/user-service/users").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/community-service/post/like/top5").permitAll()
+                        .requestMatchers(HttpMethod.GET,"/api/community-service/post/like/like-num/**").permitAll()
                         .requestMatchers(HttpMethod.GET,"/api/community-service/post/list/**").permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/community-service/post/search/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/api/user-service/v3/api-docs/**")).permitAll()
