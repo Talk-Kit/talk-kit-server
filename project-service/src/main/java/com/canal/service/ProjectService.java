@@ -20,6 +20,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -286,20 +289,34 @@ public class ProjectService {
         });
     }
 
-    public ResponseEntity<InputStreamResource> downloadFile(String fileUrl){
+    public ResponseEntity<byte[]> downloadFile(String fileUrl) throws IOException {
         String nhnToken = nhnAuthService.getNHNToken();
         String[] variables = getStoragePathVariables(fileUrl);
         String folder = variables[0];
         String objectName = variables[1];
-        ResponseEntity<InputStreamResource> response = nhnStorageClient.downloadFile(folder,objectName,nhnToken);
-        if (response.getStatusCode() == HttpStatus.OK){
+
+        ResponseEntity<InputStreamResource> response = nhnStorageClient.downloadFile(folder, objectName, nhnToken);
+
+        if (response.getStatusCode() == HttpStatus.OK) {
             InputStreamResource inputStream = response.getBody();
-            HttpHeaders headers = new HttpHeaders();
-            headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + objectName + "\"");
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(inputStream);
+
+            // InputStream을 byte[]로 변환
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            try {
+                inputStream.getInputStream().transferTo(outputStream);
+                byte[] fileBytes = outputStream.toByteArray();
+                HttpHeaders headers = new HttpHeaders();
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + objectName + "\"");
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                headers.setContentLength(fileBytes.length);
+
+                return ResponseEntity.ok()
+                        .headers(headers)
+                        .body(fileBytes);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+            }
         }
         return ResponseEntity.status(response.getStatusCode()).body(null);
     }
@@ -313,7 +330,7 @@ public class ProjectService {
     private String setRandomFileName(String contentType){
         String extension = contentTypeMap.get(contentType);
         if (extension == null){
-            extension = ".bin";
+            extension = ".ext";
         }
         return UUID.randomUUID().toString() + extension;
     }
