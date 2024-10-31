@@ -61,7 +61,7 @@ public class PostController {
         return postService.delete(postSeq, auth);
     }
 
-    @Operation(summary = "게시판 유형 별 게시글 조회 API", description = "게시글 유형 별로 삭제되지 않은 게시글을 조회합니다")
+    @Operation(summary = "게시판 유형 별 게시글 조회 API", description = "게시글 유형 별로 삭제되지 않은 게시글을 조회합니다", security = {})
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "CREATED: 게시글 조회 성공"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 게시글 조회 실패. 요청값 확인 필요합니다"),
@@ -77,7 +77,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(resultList);
     }
 
-    @Operation(summary = "게시판 유형 별 공개 게시글 조회 API", description = "게시글 유형 별로 삭제되지 않은 공개 게시글을 조회합니다")
+    @Operation(summary = "게시판 유형 별 공개 게시글 조회 API", description = "게시글 유형 별로 삭제되지 않은 공개 게시글을 조회합니다", security = {})
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "CREATED: 게시글 조회 성공"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 게시글 조회 실패. 요청값 확인 필요합니다"),
@@ -109,7 +109,7 @@ public class PostController {
         return ResponseEntity.status(HttpStatus.OK).body(result);
     }
 
-    @Operation(summary = "게시글 검색 API", description = "키워드로 게시글을 조회합니다")
+    @Operation(summary = "게시글 검색 API", description = "키워드로 게시글을 조회합니다", security = {})
     @ApiResponses({
             @ApiResponse(responseCode = "201", description = "CREATED: 게시글 걷색 성공"),
             @ApiResponse(responseCode = "400", description = "BAD REQUEST: 게시글 검색 실패. 요청값 확인 필요합니다"),
