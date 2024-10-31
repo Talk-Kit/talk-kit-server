@@ -36,7 +36,7 @@ public class ReplyLikeService {
             if(replyEntity.getParentReplySeq() == null){
                 // 좋아요 존재 여부 확인
                 ReplyLikeEntity replyLikeEntity = replyLikeRepository.findByReplySeqAndUserSeq(replySeq, userSeq);
-                if(replyLikeEntity == null || replyLikeEntity.isDeleted()){
+                if(replyLikeEntity == null){
                     // entity 저장
                     replyLikeEntity.setUserSeq(userSeq);
                     replyLikeEntity.setReplySeq(replySeq);
@@ -48,8 +48,18 @@ public class ReplyLikeService {
                     postRepository.save(reply);
 
                     return ResponseEntity.status(HttpStatus.OK).body(true);
-                }
-                else{
+                } else if (replyLikeEntity.isDeleted()) {
+                    replyLikeEntity.setDeleted(false);
+                    replyLikeEntity.setUpdatedAt(LocalDateTime.now());
+                    replyLikeRepository.save(replyLikeEntity);
+
+                    // reply 테이블 reply_like_num update
+                    ReplyEntity reply =  replyRepository.findByReplySeq(replySeq);
+                    reply.setReplyLikeNum(reply.getReplyLikeNum()+1);
+                    postRepository.save(reply);
+
+                    return ResponseEntity.status(HttpStatus.OK).body(true);
+                } else{
                     replyLikeEntity.setDeleted(true);
                     replyLikeEntity.setUpdatedAt(LocalDateTime.now());
                     replyLikeRepository.save(replyLikeEntity);
