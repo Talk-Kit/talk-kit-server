@@ -32,11 +32,21 @@ public class PostLikeService {
             // 좋아요 존재 여부 확인
             PostLikeEntity postLikeEntity = postLikeRepository.findByPostSeqAndUserSeq(postSeq, userSeq);
             // 좋아요 생성
-            if(postLikeEntity == null || postLikeEntity.isDeleted()){
+            if(postLikeEntity == null){
                 postLikeEntity = new PostLikeEntity();
                 // entity 저장
                 postLikeEntity.setUserSeq(userSeq);
                 postLikeEntity.setPostSeq(postSeq);
+                postLikeRepository.save(postLikeEntity);
+
+                // post 테이블 post_like_num update
+                PostEntity postEntity =  postRepository.findByPostSeq(postSeq);
+                postEntity.setPostLikeNum(postEntity.getPostLikeNum()+1);
+                postRepository.save(postEntity);
+
+                return ResponseEntity.status(HttpStatus.OK).body(true);
+            } else if (postLikeEntity.isDeleted()) {
+                postLikeEntity.reCreatePostLike();
                 postLikeRepository.save(postLikeEntity);
 
                 // post 테이블 post_like_num update
