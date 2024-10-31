@@ -65,7 +65,7 @@ public class WebSecurity {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("http://125.6.37.218:30307"); // 허용할 출처
+        configuration.addAllowedOrigin("http://125.6.37.218:30307/"); // 허용할 출처
         configuration.addAllowedMethod("*"); // 모든 HTTP 메소드 허용
         configuration.addAllowedHeader("*"); // 모든 헤더 허용
         configuration.addExposedHeader("Authorization");
